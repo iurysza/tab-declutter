@@ -30,3 +30,10 @@ Status: Automated implementation complete; unpacked Chrome smoke pending
 ### Remaining validation
 
 - The unpacked extension has not yet been driven through Chrome. The parent should run `bun run mock:provider`, load `dist/`, group representative tabs, verify names/membership, press Undo, inspect popup/options visually, deny one permission request, and exercise one provider failure. No browser-smoke success is claimed here.
+
+## 2026-08-07 — Final failure-boundary pass
+
+- Added safe UI responses for rejected service-worker messages and settings load/save operations.
+- Split Chrome capture, grouping, and restore failures into accurate actionable messages.
+- Commit: `72e1f4f`.
+- Re-ran `bun run check`: 21 tests passed, lint/typecheck/project verification passed, and the final service-worker bundle is 561.41 kB (136.13 kB gzip). The unpacked Chrome smoke remains pending as recorded above.
