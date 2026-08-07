@@ -167,8 +167,11 @@ The v2 endpoints upload a ZIP to an existing item, fetch upload status, submit i
 
 Before the first submission:
 
+- add the recommended transparent padding to the 128×128 store icon;
 - create the required 1280×800 screenshot and 440×280 promo tile;
 - publish the privacy policy at a stable public URL;
 - register and verify the long-term publisher account;
 - prepare a temporary reviewer credential and test instructions;
+- either declare IPv6 loopback in `optional_host_permissions` or reject `[::1]` URLs, which settings currently accept but Chrome cannot grant;
+- revoke a previously granted provider origin when the saved origin changes, so access stays as narrow as the listing claims;
 - run `bun run check` and the unpacked Chrome smoke against the exact ZIP contents.
