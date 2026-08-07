@@ -14,7 +14,7 @@ Status: Automated implementation complete; unpacked Chrome smoke pending
 - Added Vercel AI SDK adapters for OpenAI, Anthropic, Google, and OpenAI-compatible endpoints; provider failures map to safe errors without keys or response bodies.
 - Added Chrome adapters for active-window capture, grouping, order/group restoration, trusted local storage, session Undo storage, and exact provider-origin permission requests.
 - Added a typed service-worker message protocol and synchronous listener registration with safe asynchronous responses.
-- Added the compact Threadline popup and focused settings page, including Workstream/Topic/Intent selection, custom criterion add/edit/remove, provider/model/key/base URL fields, setup/errors/status, and Undo.
+- Added the compact Tab Declutter popup and focused settings page, including Workstream/Topic/Intent selection, custom criterion add/edit/remove, provider/model/key/base URL fields, setup/errors/status, and Undo.
 - Added privacy and development documentation, executable build-contract checks, and a credential-free OpenAI-compatible fixture.
 - Commits: `38c8b6c`, `b103358`, `7cfcdb1`, `d931a62`.
 
@@ -47,7 +47,7 @@ Status: partial
 - Inspected the options and popup surfaces in the running unpacked extension.
 - Verified the settings page loads the provider, model, API key, base URL, and criteria UI.
 - Verified the popup loads the current-window grouping UI and the Workstream / Topic / Intent selector.
-- Seeded extension storage with fixture provider settings for `openai-compatible`, model `threadline-fixture`, dummy key, and local base URL.
+- Seeded extension storage with fixture provider settings for `openai-compatible`, model `tab-declutter-fixture`, dummy key, and local base URL.
 - Created two representative eligible tabs (`https://example.com/` and `https://example.org/`).
 - Observed the popup failure state when provider access was missing: `Allow access to the provider in Settings`.
 - Retried native capture with Peekaboo against `Google Chrome for Testing`; `peekaboo see --app "Google Chrome for Testing" --json` failed with `Capture failed: No displays available for window capture`.
@@ -63,7 +63,7 @@ Status: partial
 - Confirmed Peekaboo still could not capture that window: `peekaboo see --app "Google Chrome for Testing" --window-id 8721 --json` failed with `Capture failed: No displays available for window capture`.
 - Loaded the settings page at `chrome-extension://cggbiaollmchknafdbgmcpinpecjbjdd/src/options/index.html` in the clean profile.
 - Verified the options page text: provider selector, model/key/base URL inputs, criteria section, and Save settings button.
-- Set the options form to `openai-compatible`, model `threadline-fixture`, API key `dummy-fixture-key`, and base URL `http://localhost:63816/v1` with CDP input events.
+- Set the options form to `openai-compatible`, model `tab-declutter-fixture`, API key `dummy-fixture-key`, and base URL `http://localhost:63816/v1` with CDP input events.
 - Triggered the real Save button with `Runtime.evaluate(..., userGesture:true)` and observed `Saving…` in the UI.
 
 ### Not completed
@@ -80,10 +80,10 @@ Status: completed, with screenshot capture failure
 
 - Resolved the main Chrome for Testing PID as `20751` via `lsof -i :9224` and `ps -p`.
 - Filled the options form using `Input.insertText` CDP events so React controlled state updated.
-- **Denial assertion**: set provider `openai-compatible`, model `threadline-fixture`, key `dummy-deny-key`, base URL `https://example-provider.com/v1`; clicked Save with `userGesture:true`; sent keycode `53` (Escape) to PID `20751` via `/tmp/send-key-to-pid`.
+- **Denial assertion**: set provider `openai-compatible`, model `tab-declutter-fixture`, key `dummy-deny-key`, base URL `https://example-provider.com/v1`; clicked Save with `userGesture:true`; sent keycode `53` (Escape) to PID `20751` via `/tmp/send-key-to-pid`.
   - Poll result: options body contained `Provider access was not allowed` and `chrome.permissions.contains({origins:['https://example-provider.com/*']})` returned `false`.
-- **Grant and save assertion**: reloaded options, set provider `openai-compatible`, model `threadline-fixture`, key `dummy-fixture-key`, base URL `http://localhost:63816/v1`; clicked Save with `userGesture:true`; sent keycode `36` (Return) to PID `20751`.
-  - Poll result: options body contained `Settings saved`, `chrome.permissions.contains({origins:['http://localhost:63816/*']})` returned `true`, and `chrome.storage.local.get('providerSettings')` returned the fixture settings including model `threadline-fixture`.
+- **Grant and save assertion**: reloaded options, set provider `openai-compatible`, model `tab-declutter-fixture`, key `dummy-fixture-key`, base URL `http://localhost:63816/v1`; clicked Save with `userGesture:true`; sent keycode `36` (Return) to PID `20751`.
+  - Poll result: options body contained `Settings saved`, `chrome.permissions.contains({origins:['http://localhost:63816/*']})` returned `true`, and `chrome.storage.local.get('providerSettings')` returned the fixture settings including model `tab-declutter-fixture`.
 - **Grouping assertion**: pinned the settings tab (`1777733284`); pre-grouped `https://example.com/` (tab `1777733285`) and `https://example.org/` (tab `1777733286`) as `Before smoke` with `color: blue`, `collapsed: true`; opened the popup and clicked `Organise current window`.
   - Result: `chrome.tabGroups.query()` showed a single group with `title: "Fixture workstream"`, `color: "blue"`, `collapsed: false`, containing both example tabs. The pinned settings tab and the popup tab were not grouped.
 - **Undo assertion**: clicked `Undo last grouping` in the popup.
@@ -98,4 +98,4 @@ Status: completed, with screenshot capture failure
   - `Page.captureScreenshot` over CDP timed out for both options and popup targets.
   - `peekaboo see --app "Google Chrome for Testing" --window-id 8721` and screen-capture modes failed with `Capture failed: No displays available for window capture` / `Failed to capture any screens`.
   - `screencapture -l 8721` failed with `could not create image from window`.
-  - Existing `/tmp/threadline-options.png` is from an earlier attempt and does not reflect the completed pass; `/tmp/threadline-popup.png` was not created.
+  - Existing `/tmp/tab-declutter-options.png` is from an earlier attempt and does not reflect the completed pass; `/tmp/tab-declutter-popup.png` was not created.

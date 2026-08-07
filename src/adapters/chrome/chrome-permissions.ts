@@ -8,3 +8,11 @@ export const chromePermission: PermissionPort = {
 export function requestProviderPermission(settings: ProviderSettings): Promise<boolean> {
   return chrome.permissions.request({ origins: [providerOriginPattern(settings)] })
 }
+
+export function removeProviderPermission(originPattern: string): Promise<boolean> {
+  return chrome.permissions.remove({ origins: [originPattern] })
+}
+
+export function revokeProviderPermission(originPattern: string): Promise<void> {
+  return chrome.permissions.remove({ origins: [originPattern] }).then(() => {})
+}

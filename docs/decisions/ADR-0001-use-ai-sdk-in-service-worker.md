@@ -10,7 +10,7 @@
 
 ## Context
 
-Threadline needs one structured classification per user action, user-owned provider credentials, arbitrary OpenAI-compatible base URLs, and no hosted service. The extension runtime must survive MV3 suspension without introducing durable conversations or server state.
+Tab Declutter needs one structured classification per user action, user-owned provider credentials, arbitrary OpenAI-compatible base URLs, and no hosted service. The extension runtime must survive MV3 suspension without introducing durable conversations or server state.
 
 ## Decision
 

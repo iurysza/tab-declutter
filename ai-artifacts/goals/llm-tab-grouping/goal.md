@@ -1,6 +1,6 @@
 # Goal
 
-Build Threadline as a polished, client-only Chrome extension that uses the user’s chosen LLM to group the active window by workstream, topic, intent, or a custom criterion, then restores the prior arrangement with one-action Undo.
+Build Tab Declutter as a polished, client-only Chrome extension that uses the user’s chosen LLM to group the active window by workstream, topic, intent, or a custom criterion, then restores the prior arrangement with one-action Undo.
 
 ## Contract
 

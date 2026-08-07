@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=440" />
+<title>Tab Declutter promotional tile</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&display=swap');
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    width: 440px;
+    height: 280px;
+    overflow: hidden;
+    background: #5a63d8;
+    font-family: 'Inter', system-ui, sans-serif;
+    color: #fff;
+  }
+  .tile {
+    width: 100%;
+    height: 100%;
+    padding: 36px 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .brand-mark { position: relative; width: 44px; height: 44px; border-radius: 13px; background: #fff; box-shadow: 0 6px 18px rgba(24, 33, 47, .18); }
+  .brand-mark i { position: absolute; left: 10px; height: 3px; border-radius: 2px; background: #5a63d8; }
+  .brand-mark i:nth-child(1) { top: 11px; width: 18px; }
+  .brand-mark i:nth-child(2) { top: 19px; width: 24px; }
+  .brand-mark i:nth-child(3) { top: 27px; width: 16px; }
+  .brand-mark b { position: absolute; width: 7px; height: 7px; right: 8px; bottom: 8px; border-radius: 50%; background: #f26b4b; }
+  h1 { margin: 0; font-size: 38px; letter-spacing: -.04em; line-height: 1; }
+  p { margin: 0; font-size: 16px; line-height: 1.4; color: rgba(255, 255, 255, .86); max-width: 320px; }
+</style>
+</head>
+<body>
+  <div class="tile">
+    <div class="brand-mark"><i></i><i></i><i></i><b></b></div>
+    <div>
+      <h1>Tab Declutter</h1>
+      <p>Group open tabs into named workstreams with your chosen LLM.</p>
+    </div>
+  </div>
+</body>
+</html>

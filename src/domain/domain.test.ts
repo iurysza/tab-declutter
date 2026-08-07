@@ -49,6 +49,8 @@ describe('functional core', () => {
     expect(native.ok && providerOriginPattern(native.value)).toBe('https://api.openai.com/*')
     const local = parseProviderSettings({ provider: 'openai-compatible', apiKey: 'key', model: 'local', baseUrl: 'http://localhost:11434/v1' })
     expect(local.ok && providerOriginPattern(local.value)).toBe('http://localhost:11434/*')
+    const ipv6 = parseProviderSettings({ provider: 'openai-compatible', apiKey: 'key', model: 'local', baseUrl: 'http://[::1]:11434/v1' })
+    expect(ipv6.ok && providerOriginPattern(ipv6.value)).toBe('http://[::1]:11434/*')
     expect(parseProviderSettings({ provider: 'openai-compatible', apiKey: 'key', model: 'x', baseUrl: 'http://remote.test/v1' }).ok).toBe(false)
     expect(parseProviderSettings({ provider: 'openai', apiKey: '', model: '' }).ok).toBe(false)
   })

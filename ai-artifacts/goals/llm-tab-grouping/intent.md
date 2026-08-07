@@ -2,7 +2,7 @@
 
 ## Outcome
 
-Build **Threadline**, a Chrome extension that uses the user’s chosen LLM to reorganise tabs in the active window into clear, named groups. The extension should make a cluttered window useful in one action, support three distinct grouping lenses, and let the user undo the latest grouping action.
+Build **Tab Declutter**, a Chrome extension that uses the user’s chosen LLM to reorganise tabs in the active window into clear, named groups. The extension should make a cluttered window useful in one action, support three distinct grouping lenses, and let the user undo the latest grouping action.
 
 ## Audience and problem
 

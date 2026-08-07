@@ -1,6 +1,6 @@
 # Privacy
 
-Threadline is client-only. It has no backend, user account, telemetry, advertising, or remote code.
+Tab Declutter is client-only. It has no backend, user account, telemetry, advertising, or remote code.
 
 ## Stored locally
 
@@ -8,8 +8,8 @@ Threadline is client-only. It has no backend, user account, telemetry, advertisi
 
 ## Sent to the provider
 
-Threadline sends the selected grouping criterion's name and instruction. For each eligible tab in the active window, it also sends a temporary reference, title, and minimised URL. URL credentials, query strings, fragments, and local file paths are removed first. Provider credentials are sent only to the configured provider as required for authentication.
+Tab Declutter sends the selected grouping criterion's name and instruction. For each eligible tab in the active window, it also sends a temporary reference, title, and minimised URL. URL credentials, query strings, fragments, and local file paths are removed first. Provider credentials are sent only to the configured provider as required for authentication.
 
 ## Never collected
 
-Threadline does not read or collect page contents, Chrome browsing history, bookmarks, cookies, form values, or browser identity. It does not log API keys or provider response bodies. Network permission is requested from a user gesture for the configured origin.
+Tab Declutter does not read or collect page contents, Chrome browsing history, bookmarks, cookies, form values, or browser identity. It does not log API keys or provider response bodies. Network permission is requested from a user gesture for the configured origin.

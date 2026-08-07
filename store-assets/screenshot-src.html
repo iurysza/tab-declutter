@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1280" />
+<title>Tab Declutter product screenshot</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    width: 1280px;
+    height: 800px;
+    overflow: hidden;
+    background: #e9eaf2;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  .chrome-window {
+    width: 1280px;
+    height: 800px;
+    background: #fff;
+    display: grid;
+    grid-template-rows: 42px 38px 1fr;
+  }
+  /* Title bar */
+  .titlebar {
+    background: #dee1e6;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+  }
+  .window-controls { display: flex; gap: 8px; }
+  .dot { width: 11px; height: 11px; border-radius: 50%; }
+  .dot.close { background: #ff5f57; }
+  .dot.min { background: #febc2e; }
+  .dot.max { background: #28c840; }
+  .address { flex: 1; height: 30px; background: #fff; border-radius: 15px; margin: 0 70px; display: flex; align-items: center; padding: 0 14px; color: #5f6368; font-size: 13px; }
+  /* Tab bar */
+  .tabbar {
+    background: #fff;
+    display: flex;
+    align-items: flex-end;
+    padding: 0 6px;
+    gap: 4px;
+    border-bottom: 1px solid #dadce0;
+  }
+  .tab {
+    height: 34px;
+    padding: 0 12px;
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #3c4043;
+    background: #f1f3f4;
+    min-width: 120px;
+    max-width: 200px;
+  }
+  .tab.active { background: #fff; border: 1px solid #dadce0; border-bottom: 0; }
+  .tab img { width: 14px; height: 14px; border-radius: 50%; background: #9aa0a6; }
+  .tab span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  /* Groups */
+  .tabbar-group {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    padding: 2px 4px;
+    border-radius: 10px 10px 0 0;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    height: 36px;
+  }
+  .tabbar-group.blue { background: #8ab4f8; }
+  .tabbar-group.green { background: #81c995; }
+  .tabbar-group.yellow { background: #fdd663; color: #202124; }
+  .tabbar-group .tab {
+    background: rgba(255,255,255,.92);
+    color: #3c4043;
+  }
+  /* Page content */
+  .page {
+    background: #f8f9fa;
+    display: grid;
+    place-items: center;
+    position: relative;
+  }
+  .content-card {
+    width: 640px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(60,64,67,.12);
+    padding: 32px;
+  }
+  .content-card h2 { margin: 0 0 8px; font-size: 24px; color: #202124; }
+  .content-card p { margin: 0; color: #5f6368; font-size: 15px; line-height: 1.5; }
+  .badge {
+    position: absolute;
+    right: 40px;
+    top: 40px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(60,64,67,.18);
+    padding: 16px;
+    width: 320px;
+  }
+  .badge h3 { margin: 0 0 8px; font-size: 15px; color: #202124; }
+  .badge ul { margin: 0; padding-left: 18px; color: #5f6368; font-size: 13px; line-height: 1.6; }
+</style>
+</head>
+<body>
+  <div class="chrome-window">
+    <div class="titlebar">
+      <div class="window-controls">
+        <div class="dot close"></div>
+        <div class="dot min"></div>
+        <div class="dot max"></div>
+      </div>
+      <div class="address">github.com/iurysza/tab-declutter</div>
+    </div>
+    <div class="tabbar">
+      <div class="tabbar-group blue" title="Ship feature">
+        <div class="tab"><span>GitHub PR</span></div>
+        <div class="tab"><span>Linear issue</span></div>
+        <div class="tab active"><span>Vercel preview</span></div>
+      </div>
+      <div class="tabbar-group green" title="Compare pricing">
+        <div class="tab"><span>OpenAI pricing</span></div>
+        <div class="tab"><span>Anthropic console</span></div>
+      </div>
+      <div class="tabbar-group yellow" title="Review docs">
+        <div class="tab"><span>AI SDK docs</span></div>
+        <div class="tab"><span>Manifest V3</span></div>
+      </div>
+      <div class="tab"><span>Settings</span></div>
+      <div class="tab"><span>Personal</span></div>
+    </div>
+    <div class="page">
+      <div class="content-card">
+        <h2>One click, named workstreams</h2>
+        <p>Tab Declutter read the active window, sent only eligible tab titles and minimised URLs to the chosen provider, and created the groups you see above. Undo restores the previous layout.</p>
+      </div>
+      <div class="badge">
+        <h3>What just happened</h3>
+        <ul>
+          <li>Pinned and split-view tabs stayed untouched</li>
+          <li>Singletons and ambiguous tabs stayed ungrouped</li>
+          <li>Custom lens available alongside Workstream, Topic, Intent</li>
+          <li>One-click Undo reverts order, membership, names, and colour</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

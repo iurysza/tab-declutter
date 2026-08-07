@@ -6,10 +6,10 @@ const server = Bun.serve({
       return Response.json({ error: { message: 'Not found' } }, { status: 404, headers: corsHeaders() })
     }
     return Response.json({
-      id: 'threadline-fixture',
+      id: 'tab-declutter-fixture',
       object: 'chat.completion',
       created: 0,
-      model: 'threadline-fixture',
+      model: 'tab-declutter-fixture',
       choices: [{ index: 0, message: { role: 'assistant', content: JSON.stringify({ groups: [{ name: 'Fixture workstream', tabs: ['T1', 'T2'] }] }) }, finish_reason: 'stop' }],
       usage: { prompt_tokens: 1, completion_tokens: 1, total_tokens: 2 },
     }, { headers: corsHeaders() })
@@ -20,4 +20,4 @@ function corsHeaders() {
   return { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'POST, OPTIONS' }
 }
 
-console.log(`Threadline fixture: http://localhost:${server.port}/v1`)
+console.log(`Tab Declutter fixture: http://localhost:${server.port}/v1`)

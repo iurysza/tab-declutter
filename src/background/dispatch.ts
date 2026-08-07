@@ -7,7 +7,7 @@ import { undoLastGrouping } from '../application/undo-last-grouping'
 export function createDispatch(ports: AppPorts) {
   return async (input: unknown): Promise<RuntimeResponse> => {
     const parsed = requestSchema.safeParse(input)
-    if (!parsed.success) return { ok: false, error: { code: 'invalid-request', message: 'Threadline received an invalid request' } }
+    if (!parsed.success) return { ok: false, error: { code: 'invalid-request', message: 'Tab Declutter received an invalid request' } }
     const request = parsed.data
     if (request.type === 'get-popup-state') return { ok: true, data: await getPopupState(ports) }
     if (request.type === 'select-criterion') {

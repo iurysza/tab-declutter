@@ -7,7 +7,7 @@ function assert(condition: unknown, message: string): asserts condition {
 const manifest = JSON.parse(readFileSync('dist/manifest.json', 'utf8')) as Record<string, unknown>
 assert(manifest.manifest_version === 3, 'manifest_version must be 3')
 assert(JSON.stringify(manifest.permissions) === JSON.stringify(['tabs', 'tabGroups', 'storage']), 'unexpected required permissions')
-assert(JSON.stringify(manifest.optional_host_permissions) === JSON.stringify(['https://*/*', 'http://localhost/*', 'http://127.0.0.1/*']), 'unexpected optional hosts')
+assert(JSON.stringify(manifest.optional_host_permissions) === JSON.stringify(['https://*/*', 'http://localhost/*', 'http://127.0.0.1/*', 'http://[::1]/*']), 'unexpected optional hosts')
 assert(!('content_scripts' in manifest), 'content scripts are outside the privacy contract')
 const background = manifest.background as Record<string, unknown>
 assert(background.type === 'module', 'service worker must be a module')

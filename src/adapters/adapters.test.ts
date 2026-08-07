@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { safeProviderError } from './ai/ai-sdk-classifier'
-import { requestProviderPermission } from './chrome/chrome-permissions'
+import { removeProviderPermission, requestProviderPermission } from './chrome/chrome-permissions'
 import { chromeWorkspace } from './chrome/chrome-workspace'
 import { chromeUndo, saveOptionsData } from './chrome/chrome-storage'
 import type { ProviderSettings } from '../domain/settings'
@@ -13,6 +13,13 @@ describe('edge adapters', () => {
     vi.stubGlobal('chrome', { permissions: { request } })
     expect(await requestProviderPermission(settings)).toBe(true)
     expect(request).toHaveBeenCalledWith({ origins: ['http://localhost:11434/*'] })
+  })
+
+  it('removes a previously granted provider origin', async () => {
+    const remove = vi.fn(async () => true)
+    vi.stubGlobal('chrome', { permissions: { remove } })
+    expect(await removeProviderPermission('https://api.openai.com/*')).toBe(true)
+    expect(remove).toHaveBeenCalledWith({ origins: ['https://api.openai.com/*'] })
   })
 
   it('translates provider failures without leaking dependency messages', () => {

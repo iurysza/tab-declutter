@@ -29,7 +29,7 @@ The grouping transaction is:
 
 ```text
 Popup                              Options
-┌ Threadline              settings ┌ Threadline settings
+┌ Tab Declutter              settings ┌ Tab Declutter settings
 │ Turn this window into threads    │ Provider
 │ Group by [Workstream ▾]           │ [provider] [model]
 │ Same active task or deliverable   │ [API key] [base URL]

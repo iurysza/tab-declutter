@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { loadOptionsData, saveOptionsData } from '../adapters/chrome/chrome-storage'
-import { requestProviderPermission } from '../adapters/chrome/chrome-permissions'
+import { requestProviderPermission, revokeProviderPermission } from '../adapters/chrome/chrome-permissions'
 import { customCriterionSchema, type CustomCriterion } from '../domain/criteria'
-import { parseProviderSettings, providerKinds, type ProviderKind, type ProviderSettings } from '../domain/settings'
+import { parseProviderSettings, providerKinds, providerOriginPattern, type ProviderKind, type ProviderSettings } from '../domain/settings'
 import { Brand } from '../ui/components/Brand'
 import '../ui/theme.css'
 import './options.css'
@@ -12,8 +12,9 @@ interface OptionsApi {
   load(): Promise<{ providerSettings?: unknown; customCriteria: readonly CustomCriterion[] }>
   save(settings: ProviderSettings, criteria: readonly CustomCriterion[]): Promise<void>
   request(settings: ProviderSettings): Promise<boolean>
+  revoke(origin: string): Promise<void>
 }
-const defaults: OptionsApi = { load: loadOptionsData, save: saveOptionsData, request: requestProviderPermission }
+const defaults: OptionsApi = { load: loadOptionsData, save: saveOptionsData, request: requestProviderPermission, revoke: revokeProviderPermission }
 const empty: Draft = { provider: 'openai', apiKey: '', model: '', baseUrl: '' }
 
 function toDraft(input: unknown): Draft {
@@ -23,12 +24,18 @@ function toDraft(input: unknown): Draft {
   return { provider, apiKey: typeof value.apiKey === 'string' ? value.apiKey : '', model: typeof value.model === 'string' ? value.model : '', baseUrl: typeof value.baseUrl === 'string' ? value.baseUrl : '' }
 }
 
+function loadPrevious(input: unknown): ProviderSettings | undefined {
+  const parsed = parseProviderSettings(input)
+  return parsed.ok ? parsed.value : undefined
+}
+
 export function Options({ api = defaults }: { readonly api?: OptionsApi }) {
   const [draft, setDraft] = useState<Draft>(empty)
+  const [loaded, setLoaded] = useState<ProviderSettings | undefined>()
   const [criteria, setCriteria] = useState<CustomCriterion[]>([])
   const [notice, setNotice] = useState<{ text: string; kind: 'success' | 'error' }>()
   const [saving, setSaving] = useState(false)
-  useEffect(() => { void api.load().then((data) => { setDraft(toDraft(data.providerSettings)); setCriteria([...data.customCriteria]) }, () => setNotice({ text: 'Threadline could not load settings', kind: 'error' })) }, [])
+  useEffect(() => { void api.load().then((data) => { setDraft(toDraft(data.providerSettings)); setLoaded(loadPrevious(data.providerSettings)); setCriteria([...data.customCriteria]) }, () => setNotice({ text: 'Tab Declutter could not load settings', kind: 'error' })) }, [])
   const field = (key: keyof Draft, value: string) => setDraft((current) => ({ ...current, [key]: value }))
   const save = async () => {
     setNotice(undefined)
@@ -44,9 +51,15 @@ export function Options({ api = defaults }: { readonly api?: OptionsApi }) {
     try {
       if (!(await api.request(parsed.value))) return setNotice({ text: 'Provider access was not allowed', kind: 'error' })
       await api.save(parsed.value, validCriteria)
+      const previousPattern = loaded ? providerOriginPattern(loaded) : undefined
+      const newPattern = providerOriginPattern(parsed.value)
+      if (previousPattern && previousPattern !== newPattern) {
+        try { await api.revoke(previousPattern) } catch { /* keep success notice even if cleanup fails */ }
+      }
+      setLoaded(parsed.value)
       setNotice({ text: 'Settings saved', kind: 'success' })
     } catch {
-      setNotice({ text: 'Threadline could not save settings', kind: 'error' })
+      setNotice({ text: 'Tab Declutter could not save settings', kind: 'error' })
     } finally { setSaving(false) }
   }
   const add = () => setCriteria((items) => [...items, { id: crypto.randomUUID(), name: '', instruction: '' }])
@@ -55,7 +68,7 @@ export function Options({ api = defaults }: { readonly api?: OptionsApi }) {
 
   return <main className="options-shell">
     <header><Brand /><div className="privacy-badge mono">LOCAL BY DESIGN</div></header>
-    <section><div className="section-heading"><p className="mono">01 · PROVIDER</p><h1>Your model, your key.</h1><p>Threadline calls this provider directly. The key stays in this Chrome profile and is never synced.</p></div>
+    <section><div className="section-heading"><p className="mono">01 · PROVIDER</p><h1>Your model, your key.</h1><p>Tab Declutter calls this provider directly. The key stays in this Chrome profile and is never synced.</p></div>
       <div className="form-grid">
         <label>Provider<select value={draft.provider} onChange={(e) => field('provider', e.target.value)}>{providerKinds.map((kind) => <option key={kind} value={kind}>{kind === 'openai' ? 'OpenAI' : kind === 'openai-compatible' ? 'OpenAI-compatible' : kind[0].toUpperCase() + kind.slice(1)}</option>)}</select></label>
         <label>Model<input value={draft.model} onChange={(e) => field('model', e.target.value)} placeholder="Provider model ID" /></label>

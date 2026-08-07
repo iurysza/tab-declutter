@@ -1,18 +1,20 @@
 <p align="center">
-  <img src="public/icons/icon-128.png" width="96" alt="Threadline icon">
+  <img src="public/icons/icon-128.png" width="96" alt="Tab Declutter icon">
 </p>
 
-<h1 align="center">Threadline</h1>
+<h1 align="center">Tab Declutter</h1>
 
 <p align="center"><strong>Turn a crowded Chrome window into named threads.</strong></p>
 
 <p align="center">
-  <a href="https://github.com/iurysza/threadline-tabs/releases/latest"><img src="https://img.shields.io/github/v/release/iurysza/threadline-tabs?display_name=tag&sort=semver" alt="Latest release"></a>
+  <a href="https://github.com/iurysza/tab-declutter/releases/latest"><img src="https://img.shields.io/github/v/release/iurysza/tab-declutter?display_name=tag&sort=semver" alt="Latest release"></a>
   <img src="https://img.shields.io/badge/Chrome-140%2B-4285F4" alt="Chrome 140 or newer">
   <img src="https://img.shields.io/badge/Manifest-V3-5A63D8" alt="Manifest V3">
 </p>
 
-Threadline uses an LLM you choose to organise the tabs in your current Chrome window. Pick a grouping lens, organise once, and undo the result in one click.
+Tab Declutter groups open tabs into named workstreams with your chosen LLM—private, local, one-click Undo.
+
+Pick a grouping lens, organise once, and undo the result in one click.
 
 ```text
 current window  →  Workstream / Topic / Intent  →  named tab groups  →  Undo
@@ -20,7 +22,7 @@ current window  →  Workstream / Topic / Intent  →  named tab groups  →  Un
 
 ## Why
 
-Tab groups help only when someone names and maintains them. Threadline does that work when you ask—never in the background and never across every window.
+Tab groups help only when someone names and maintains them. Tab Declutter does that work when you ask—never in the background and never across every window.
 
 - **Workstream** groups tabs that support the same task or deliverable.
 - **Topic** groups tabs about the same subject.
@@ -34,7 +36,7 @@ Pinned and split-view tabs stay untouched. Ambiguous tabs and one-tab classifica
 
 Requires Chrome 140 or newer.
 
-1. Download `threadline-v0.1.0.zip` from the [latest release](https://github.com/iurysza/threadline-tabs/releases/latest).
+1. Download `tab-declutter-v0.1.1.zip` from the [latest release](https://github.com/iurysza/tab-declutter/releases/latest).
 2. Unzip it.
 3. Open `chrome://extensions`.
 4. Turn on **Developer mode**.
@@ -43,8 +45,8 @@ Requires Chrome 140 or newer.
 ### Build from source
 
 ```sh
-git clone https://github.com/iurysza/threadline-tabs.git
-cd threadline-tabs
+git clone https://github.com/iurysza/tab-declutter.git
+cd tab-declutter
 bun install --frozen-lockfile
 bun run build
 ```
@@ -53,7 +55,7 @@ Load the generated `dist/` folder from `chrome://extensions`.
 
 ## Set up a provider
 
-1. Open Threadline **Settings**.
+1. Open Tab Declutter **Settings**.
 2. Choose a provider and enter its exact model ID and your API key.
 3. For an OpenAI-compatible service, add its base URL.
 4. Select **Save settings** and approve access to that provider origin.
@@ -66,13 +68,15 @@ Load the generated `dist/` folder from `chrome://extensions`.
 | Google Generative AI | API key and model ID |
 | OpenAI-compatible | API key, model ID, and base URL |
 
-Remote custom endpoints must use HTTPS. `localhost` and `127.0.0.1` may use HTTP for local models and development.
+Remote custom endpoints must use HTTPS. `localhost`, `127.0.0.1`, and `[::1]` may use HTTP for local models and development.
+
+Your API key stays in `chrome.storage.local` in this Chrome profile and is sent only to authenticate requests to your chosen provider. Undo state stays in `chrome.storage.session`. Chrome asks for provider access only after you select **Save settings**.
 
 ## Privacy
 
-Threadline has no account, backend, analytics, or telemetry. It uses no content scripts.
+Tab Declutter has no account, backend, analytics, or telemetry. It uses no content scripts.
 
-A classification request sends the selected grouping instruction plus each eligible tab's title, minimised URL, and temporary reference such as `T1`. Threadline removes URL credentials, query strings, fragments, and local file paths. It never reads page contents, Chrome browsing history, bookmarks, cookies, or form data.
+A classification request sends the selected grouping instruction plus each eligible tab's title, minimised URL, and temporary reference such as `T1`. Tab Declutter removes URL credentials, query strings, fragments, and local file paths. It never reads page contents, Chrome browsing history, bookmarks, cookies, or form data.
 
 Your API key stays in `chrome.storage.local` in this Chrome profile. Undo state stays in `chrome.storage.session`. Chrome asks for provider access only after you select **Save settings**.
 
@@ -86,9 +90,9 @@ Read the full [privacy policy](docs/privacy.md).
 
 ## How grouping stays safe
 
-Threadline validates settings and structured model output before changing a tab. Unknown references, duplicate assignments, blank names, ambiguous results, and singleton groups are discarded.
+Tab Declutter validates settings and structured model output before changing a tab. Unknown references, duplicate assignments, blank names, ambiguous results, and singleton groups are discarded.
 
-Before the first mutation, Threadline saves the current layout in session storage. If grouping fails partway through, it restores that snapshot. If restoration also fails, the snapshot remains available through Undo.
+Before the first mutation, Tab Declutter saves the current layout in session storage. If grouping fails partway through, it restores that snapshot. If restoration also fails, the snapshot remains available through Undo.
 
 ## No-key demo
 
@@ -98,7 +102,7 @@ Run the local OpenAI-compatible fixture:
 bun run mock:provider
 ```
 
-In Settings, choose **OpenAI-compatible**, use the printed base URL, set the model to `threadline-fixture`, and enter any non-empty development key. The fixture groups `T1` and `T2` as **Fixture workstream**.
+In Settings, choose **OpenAI-compatible**, use the printed base URL, set the model to `tab-declutter-fixture`, and enter any non-empty development key. The fixture groups `T1` and `T2` as **Fixture workstream**.
 
 ## Development
 

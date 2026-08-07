@@ -13,7 +13,7 @@ const ports: AppPorts = {
 
 it('rejects malformed messages and never serialises provider settings', async () => {
   const dispatch = createDispatch(ports)
-  expect(await dispatch({ type: 'group-tabs', criterionId: '' })).toEqual({ ok: false, error: { code: 'invalid-request', message: 'Threadline received an invalid request' } })
+  expect(await dispatch({ type: 'group-tabs', criterionId: '' })).toEqual({ ok: false, error: { code: 'invalid-request', message: 'Tab Declutter received an invalid request' } })
   const state = JSON.stringify(await dispatch({ type: 'get-popup-state' }))
   expect(state).not.toContain('apiKey')
 })
