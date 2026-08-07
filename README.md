@@ -56,19 +56,19 @@ bun run build       # production extension in dist/
 
 The functional core under `src/domain/` has no Chrome dependency. Application use cases depend on ports and run against in-memory fakes. Chrome storage, tab mutation, permissions, and AI SDK calls live under `src/adapters/`.
 
-## Load the unpacked extension
+## Install and test
 
 1. Run `bun run build`.
-2. Open `chrome://extensions`.
-3. Enable **Developer mode**.
-4. Select **Load unpacked** and choose this repository’s `dist/` directory.
-5. Open Threadline’s settings, choose a provider, enter a key and model, and press **Save settings**.
-6. Open the toolbar popup, choose a criterion, and press **Organise current window**.
-7. Press **Undo last grouping** to restore the previous layout.
+2. Open `chrome://extensions` in Chrome for Testing 150.
+3. Turn on **Developer mode**.
+4. Click **Load unpacked** and pick this repo’s `dist/` folder.
+5. In **Settings**, choose a provider, enter a model and key, then click **Save settings**.
+6. Open the popup, choose a criterion, then click **Organise current window**.
+7. Click **Undo last grouping** to restore the previous layout.
 
-The production manifest requests `tabs`, `tabGroups`, and `storage`. Provider host patterns are optional; Chrome grants only the origin approved from Settings.
+For a no-key smoke test, run `bun run mock:provider`, choose **OpenAI-compatible**, set model `threadline-fixture`, and use any non-empty key. The mock groups `T1` and `T2`.
 
-For a credential-free browser smoke, run `bun run mock:provider`, choose **OpenAI-compatible**, enter the printed base URL, model `threadline-fixture`, and any non-empty fixture key. The server groups `T1` and `T2`; it is development-only and is not included in `dist/`.
+The manifest requests `tabs`, `tabGroups`, and `storage`. Provider access is granted per origin from Settings.
 
 ## Failure behavior
 

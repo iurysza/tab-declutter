@@ -37,3 +37,24 @@ Status: Automated implementation complete; unpacked Chrome smoke pending
 - Split Chrome capture, grouping, and restore failures into accurate actionable messages.
 - Commit: `72e1f4f`.
 - Re-ran `bun run check`: 21 tests passed, lint/typecheck/project verification passed, and the final service-worker bundle is 561.41 kB (136.13 kB gzip). The unpacked Chrome smoke remains pending as recorded above.
+
+## 2026-08-07 — Manual smoke attempts in Chrome 150
+
+Status: partial
+
+### Completed
+
+- Inspected the options and popup surfaces in the running unpacked extension.
+- Verified the settings page loads the provider, model, API key, base URL, and criteria UI.
+- Verified the popup loads the current-window grouping UI and the Workstream / Topic / Intent selector.
+- Seeded extension storage with fixture provider settings for `openai-compatible`, model `threadline-fixture`, dummy key, and local base URL.
+- Created two representative eligible tabs (`https://example.com/` and `https://example.org/`).
+- Observed the popup failure state when provider access was missing: `Allow access to the provider in Settings`.
+- Retried native capture with Peekaboo against `Google Chrome for Testing`; `peekaboo see --app "Google Chrome for Testing" --json` failed with `Capture failed: No displays available for window capture`.
+- Retried frontmost capture after activating Chrome; the same display-capture failure occurred.
+
+### Not completed
+
+- Exact optional-host permission denial could not be captured in-browser because Peekaboo could not capture the Chrome window in this environment.
+- Successful settings save through the UI could not be completed.
+- Grouping, Undo, safe provider failure on the approved local origin, and console/service-worker error checks remain open.
