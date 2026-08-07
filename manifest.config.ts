@@ -3,7 +3,7 @@ import { defineManifest } from '@crxjs/vite-plugin'
 export default defineManifest({
   manifest_version: 3,
   name: 'Threadline',
-  description: 'Turn open tabs into clear, named workstreams with your chosen LLM.',
+  description: 'Turn open tabs into clear, named groups with your chosen LLM.',
   version: '0.1.0',
   minimum_chrome_version: '140',
   permissions: ['tabs', 'tabGroups', 'storage'],

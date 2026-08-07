@@ -1,84 +1,130 @@
-# Threadline
+<p align="center">
+  <img src="public/icons/icon-128.png" width="96" alt="Threadline icon">
+</p>
 
-Threadline turns the tabs in your current Chrome window into clear, named groups using an LLM you control. Choose a grouping lens, organise once, and undo the result if it is not useful.
+<h1 align="center">Threadline</h1>
 
-## What it does
+<p align="center"><strong>Turn a crowded Chrome window into named threads.</strong></p>
 
-- **Workstream** groups tabs that support the same active task or deliverable.
-- **Topic** groups tabs that cover the same subject.
-- **Intent** groups tabs used for the same immediate activity, such as comparing or writing.
-- **Custom criteria** let you add your own grouping instruction and remove it later.
-- **Undo** restores the previous tab order, membership, group name, colour, and collapsed state for tabs that still exist.
+<p align="center">
+  <a href="https://github.com/iurysza/threadline-tabs/releases/latest"><img src="https://img.shields.io/github/v/release/iurysza/threadline-tabs?display_name=tag&sort=semver" alt="Latest release"></a>
+  <img src="https://img.shields.io/badge/Chrome-140%2B-4285F4" alt="Chrome 140 or newer">
+  <img src="https://img.shields.io/badge/Manifest-V3-5A63D8" alt="Manifest V3">
+</p>
 
-Threadline groups the active window only when you press **Organise current window**. It does not watch tab events or reorganise tabs automatically. Pinned and split-view tabs are left alone. Ambiguous tabs and one-tab classifications stay ungrouped.
+Threadline uses an LLM you choose to organise the tabs in your current Chrome window. Pick a grouping lens, organise once, and undo the result in one click.
 
-## Providers
+```text
+current window  →  Workstream / Topic / Intent  →  named tab groups  →  Undo
+```
 
-Threadline uses the Vercel AI SDK directly from its Manifest V3 service worker. It supports:
+## Why
 
-- OpenAI
-- Anthropic
-- Google Generative AI
-- OpenAI-compatible services, including a custom base URL and local models
+Tab groups help only when someone names and maintains them. Threadline does that work when you ask—never in the background and never across every window.
 
-Enter the exact model identifier supplied by your provider. A custom remote base URL must use HTTPS. Localhost and `127.0.0.1` may use HTTP.
+- **Workstream** groups tabs that support the same task or deliverable.
+- **Topic** groups tabs about the same subject.
+- **Intent** groups tabs used for the same activity, such as comparing or writing.
+- **Custom criteria** let you define another grouping lens.
+- **Undo** restores the previous order, membership, group name, colour, and collapsed state for tabs that still exist.
 
-## Privacy and permissions
+Pinned and split-view tabs stay untouched. Ambiguous tabs and one-tab classifications stay ungrouped.
 
-Your API key is stored in `chrome.storage.local` in this Chrome profile. It is not synced and is restricted to trusted extension pages. Threadline has no account, backend, analytics, or telemetry.
+## Install
 
-A classification request sends only:
+Requires Chrome 140 or newer.
 
-- the tab title;
-- a minimised URL with credentials, query, and fragment removed (local file paths are removed);
-- a temporary reference such as `T1`.
+1. Download `threadline-v0.1.0.zip` from the [latest release](https://github.com/iurysza/threadline-tabs/releases/latest).
+2. Unzip it.
+3. Open `chrome://extensions`.
+4. Turn on **Developer mode**.
+5. Select **Load unpacked** and choose the unzipped folder.
 
-Threadline never reads page contents, browsing history, bookmarks, cookies, or form data. Tab metadata is treated as untrusted input and cannot invoke tools. The settings page asks Chrome for network access to the configured provider origin only when you press **Save settings**. See [Privacy](docs/privacy.md) for the full boundary.
-
-## Develop with Bun
-
-Requirements: Bun 1.1.34 or newer and a Chrome version that supports the Split View tab metadata used by the extension.
+### Build from source
 
 ```sh
-bun install
+git clone https://github.com/iurysza/threadline-tabs.git
+cd threadline-tabs
+bun install --frozen-lockfile
+bun run build
+```
+
+Load the generated `dist/` folder from `chrome://extensions`.
+
+## Set up a provider
+
+1. Open Threadline **Settings**.
+2. Choose a provider and enter its exact model ID and your API key.
+3. For an OpenAI-compatible service, add its base URL.
+4. Select **Save settings** and approve access to that provider origin.
+5. Open the popup, choose a criterion, and select **Organise current window**.
+
+| Provider | Configuration |
+| --- | --- |
+| OpenAI | API key and model ID |
+| Anthropic | API key and model ID |
+| Google Generative AI | API key and model ID |
+| OpenAI-compatible | API key, model ID, and base URL |
+
+Remote custom endpoints must use HTTPS. `localhost` and `127.0.0.1` may use HTTP for local models and development.
+
+## Privacy
+
+Threadline has no account, backend, analytics, or telemetry. It uses no content scripts.
+
+A classification request sends the selected grouping instruction plus each eligible tab's title, minimised URL, and temporary reference such as `T1`. Threadline removes URL credentials, query strings, fragments, and local file paths. It never reads page contents, Chrome browsing history, bookmarks, cookies, or form data.
+
+Your API key stays in `chrome.storage.local` in this Chrome profile. Undo state stays in `chrome.storage.session`. Chrome asks for provider access only after you select **Save settings**.
+
+Required permissions:
+
+- `tabs` reads and organises tabs in the active window.
+- `tabGroups` creates, names, and restores groups.
+- `storage` keeps settings and one recoverable Undo snapshot.
+
+Read the full [privacy policy](docs/privacy.md).
+
+## How grouping stays safe
+
+Threadline validates settings and structured model output before changing a tab. Unknown references, duplicate assignments, blank names, ambiguous results, and singleton groups are discarded.
+
+Before the first mutation, Threadline saves the current layout in session storage. If grouping fails partway through, it restores that snapshot. If restoration also fails, the snapshot remains available through Undo.
+
+## No-key demo
+
+Run the local OpenAI-compatible fixture:
+
+```sh
+bun run mock:provider
+```
+
+In Settings, choose **OpenAI-compatible**, use the printed base URL, set the model to `threadline-fixture`, and enter any non-empty development key. The fixture groups `T1` and `T2` as **Fixture workstream**.
+
+## Development
+
+Requires Bun 1.1.34 or newer.
+
+```sh
+bun install --frozen-lockfile
 bun run dev
 bun run check
 ```
 
-Useful commands:
-
-```sh
-bun run typecheck   # strict TypeScript
-bun run lint        # Oxlint, warnings fail
-bun run test        # browser-free domain, application, adapter, and React tests
-bun run build       # production extension in dist/
-```
+`bun run check` runs strict TypeScript, Oxlint, browser-free tests, the production build, and project-contract verification.
 
 The functional core under `src/domain/` has no Chrome dependency. Application use cases depend on ports and run against in-memory fakes. Chrome storage, tab mutation, permissions, and AI SDK calls live under `src/adapters/`.
 
-## Install and test
+## Documentation
 
-1. Run `bun run build`.
-2. Open `chrome://extensions` in Chrome for Testing 150.
-3. Turn on **Developer mode**.
-4. Click **Load unpacked** and pick this repo’s `dist/` folder.
-5. In **Settings**, choose a provider, enter a model and key, then click **Save settings**.
-6. Open the popup, choose a criterion, then click **Organise current window**.
-7. Click **Undo last grouping** to restore the previous layout.
+- [Privacy policy](docs/privacy.md)
+- [Chrome Web Store publishing guide](docs/chrome-web-store.md)
+- [AI SDK architecture decision](docs/decisions/ADR-0001-use-ai-sdk-in-service-worker.md)
 
-For a no-key smoke test, run `bun run mock:provider`, choose **OpenAI-compatible**, set model `threadline-fixture`, and use any non-empty key. The mock groups `T1` and `T2`.
-
-The manifest requests `tabs`, `tabGroups`, and `storage`. Provider access is granted per origin from Settings.
-
-## Failure behavior
-
-Settings and provider output are validated before tabs change. Authentication, rate-limit, connection, permission, and invalid-output failures use short messages that never include keys or provider response bodies. Before the first tab mutation, Threadline stores a pending snapshot in `chrome.storage.session`. A partial failure triggers restoration; if restoration also fails, Undo retains the recovery snapshot.
-
-## Current limits
+## Limits
 
 - Chrome only.
 - Active window only.
 - One level of Undo.
-- Tabs closed after grouping cannot be restored.
-- Custom providers must implement the OpenAI-style API expected by the AI SDK adapter.
-- Exact restoration is best-effort if the user moves, opens, or closes tabs while a provider request or Undo is running.
+- Closed tabs cannot be restored.
+- OpenAI-compatible providers must implement the API shape expected by the AI SDK adapter.
+- Exact restoration is best-effort if tabs move, open, or close during grouping or Undo.
