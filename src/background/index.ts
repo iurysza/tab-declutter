@@ -15,6 +15,6 @@ const dispatch = createDispatch({
 void restrictLocalStorage()
 chrome.runtime.onInstalled.addListener(() => { void restrictLocalStorage() })
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-  void dispatch(message).then(sendResponse)
+  void dispatch(message).then(sendResponse, () => sendResponse({ ok: false, error: { code: 'apply-failed', message: 'Threadline could not complete the request' } }))
   return true
 })

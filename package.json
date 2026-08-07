@@ -11,7 +11,9 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "lint": "oxlint src manifest.config.ts vite.config.ts --deny-warnings",
-    "check": "bun run typecheck && bun run lint && bun run test && bun run build"
+    "check": "bun run typecheck && bun run lint && bun run test && bun run build && bun run verify:project",
+    "verify:project": "bun run scripts/verify-project.ts",
+    "mock:provider": "bun run scripts/mock-provider.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.34",

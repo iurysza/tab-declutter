@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { loadOptionsData, saveOptionsData } from '../adapters/chrome/chrome-storage'
 import { requestProviderPermission } from '../adapters/chrome/chrome-permissions'
-import { type CustomCriterion } from '../domain/criteria'
+import { customCriterionSchema, type CustomCriterion } from '../domain/criteria'
 import { parseProviderSettings, providerKinds, type ProviderKind, type ProviderSettings } from '../domain/settings'
 import { Brand } from '../ui/components/Brand'
 import '../ui/theme.css'
@@ -34,10 +34,16 @@ export function Options({ api = defaults }: { readonly api?: OptionsApi }) {
     setNotice(undefined)
     const parsed = parseProviderSettings(draft)
     if (!parsed.ok) return setNotice({ text: parsed.error.message, kind: 'error' })
+    const validCriteria: CustomCriterion[] = []
+    for (const criterion of criteria) {
+      const result = customCriterionSchema.safeParse(criterion)
+      if (!result.success) return setNotice({ text: 'Complete or remove each custom criterion', kind: 'error' })
+      validCriteria.push(result.data)
+    }
     setSaving(true)
     try {
       if (!(await api.request(parsed.value))) return setNotice({ text: 'Provider access was not allowed', kind: 'error' })
-      await api.save(parsed.value, criteria)
+      await api.save(parsed.value, validCriteria)
       setNotice({ text: 'Settings saved', kind: 'success' })
     } finally { setSaving(false) }
   }
@@ -49,7 +55,7 @@ export function Options({ api = defaults }: { readonly api?: OptionsApi }) {
     <header><Brand /><div className="privacy-badge mono">LOCAL BY DESIGN</div></header>
     <section><div className="section-heading"><p className="mono">01 · PROVIDER</p><h1>Your model, your key.</h1><p>Threadline calls this provider directly. The key stays in this Chrome profile and is never synced.</p></div>
       <div className="form-grid">
-        <label>Provider<select value={draft.provider} onChange={(e) => field('provider', e.target.value)}>{providerKinds.map((kind) => <option key={kind} value={kind}>{kind === 'openai-compatible' ? 'OpenAI-compatible' : kind[0].toUpperCase() + kind.slice(1)}</option>)}</select></label>
+        <label>Provider<select value={draft.provider} onChange={(e) => field('provider', e.target.value)}>{providerKinds.map((kind) => <option key={kind} value={kind}>{kind === 'openai' ? 'OpenAI' : kind === 'openai-compatible' ? 'OpenAI-compatible' : kind[0].toUpperCase() + kind.slice(1)}</option>)}</select></label>
         <label>Model<input value={draft.model} onChange={(e) => field('model', e.target.value)} placeholder="Provider model ID" /></label>
         <label className="wide">API key<input type="password" autoComplete="off" value={draft.apiKey} onChange={(e) => field('apiKey', e.target.value)} placeholder="Stored only in this profile" /></label>
         <label className="wide">Base URL {draft.provider !== 'openai-compatible' && <span>(optional)</span>}<input value={draft.baseUrl} onChange={(e) => field('baseUrl', e.target.value)} placeholder={draft.provider === 'openai-compatible' ? 'https://provider.example/v1' : 'Use provider default'} /></label>

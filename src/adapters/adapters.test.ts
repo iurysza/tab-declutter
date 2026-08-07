@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { safeProviderError } from './ai/ai-sdk-classifier'
 import { requestProviderPermission } from './chrome/chrome-permissions'
 import { chromeWorkspace } from './chrome/chrome-workspace'
+import { chromeUndo, saveOptionsData } from './chrome/chrome-storage'
 import type { ProviderSettings } from '../domain/settings'
 
 const settings: ProviderSettings = { provider: 'openai-compatible', apiKey: 'test-key', model: 'local', baseUrl: 'http://localhost:11434/v1' }
@@ -17,6 +18,16 @@ describe('edge adapters', () => {
   it('translates provider failures without leaking dependency messages', () => {
     expect(safeProviderError({ statusCode: 401, message: 'test-key leaked' })).toEqual({ code: 'provider-auth', message: 'Check the provider API key' })
     expect(safeProviderError({ statusCode: 429 })).toEqual({ code: 'provider-rate-limit', message: 'The provider is busy. Try again shortly' })
+  })
+
+  it('keeps settings local and crash recovery in session storage', async () => {
+    const localSet = vi.fn(async () => {})
+    const sessionSet = vi.fn(async () => {})
+    vi.stubGlobal('chrome', { storage: { local: { set: localSet }, session: { set: sessionSet } } })
+    await saveOptionsData(settings, [])
+    await chromeUndo.save({ phase: 'ready', snapshot: { windowId: 1, tabs: [], groups: [] } })
+    expect(localSet).toHaveBeenCalledWith(expect.objectContaining({ providerSettings: settings, customCriteria: [] }))
+    expect(sessionSet).toHaveBeenCalledWith(expect.objectContaining({ undoRecord: expect.objectContaining({ phase: 'ready' }) }))
   })
 
   it('captures, groups, names, and restores through Chrome APIs in order', async () => {
