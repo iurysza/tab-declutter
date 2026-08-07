@@ -12,7 +12,3 @@ export function requestProviderPermission(settings: ProviderSettings): Promise<b
 export function removeProviderPermission(originPattern: string): Promise<boolean> {
   return chrome.permissions.remove({ origins: [originPattern] })
 }
-
-export function revokeProviderPermission(originPattern: string): Promise<void> {
-  return chrome.permissions.remove({ origins: [originPattern] }).then(() => {})
-}

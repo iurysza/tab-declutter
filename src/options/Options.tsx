@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { loadOptionsData, saveOptionsData } from '../adapters/chrome/chrome-storage'
-import { requestProviderPermission, revokeProviderPermission } from '../adapters/chrome/chrome-permissions'
+import { removeProviderPermission, requestProviderPermission } from '../adapters/chrome/chrome-permissions'
 import { customCriterionSchema, type CustomCriterion } from '../domain/criteria'
 import { parseProviderSettings, providerKinds, providerOriginPattern, type ProviderKind, type ProviderSettings } from '../domain/settings'
 import { Brand } from '../ui/components/Brand'
@@ -14,7 +14,7 @@ interface OptionsApi {
   request(settings: ProviderSettings): Promise<boolean>
   revoke(origin: string): Promise<void>
 }
-const defaults: OptionsApi = { load: loadOptionsData, save: saveOptionsData, request: requestProviderPermission, revoke: revokeProviderPermission }
+const defaults: OptionsApi = { load: loadOptionsData, save: saveOptionsData, request: requestProviderPermission, revoke: (origin: string) => removeProviderPermission(origin).then(() => {}) }
 const empty: Draft = { provider: 'openai', apiKey: '', model: '', baseUrl: '' }
 
 function toDraft(input: unknown): Draft {
@@ -53,11 +53,14 @@ export function Options({ api = defaults }: { readonly api?: OptionsApi }) {
       await api.save(parsed.value, validCriteria)
       const previousPattern = loaded ? providerOriginPattern(loaded) : undefined
       const newPattern = providerOriginPattern(parsed.value)
+      let notice: { text: string; kind: 'success' | 'error' } = { text: 'Settings saved', kind: 'success' }
       if (previousPattern && previousPattern !== newPattern) {
-        try { await api.revoke(previousPattern) } catch { /* keep success notice even if cleanup fails */ }
+        try { await api.revoke(previousPattern) } catch {
+          notice = { text: 'Settings saved, but Chrome could not remove access to the previous provider', kind: 'error' }
+        }
       }
       setLoaded(parsed.value)
-      setNotice({ text: 'Settings saved', kind: 'success' })
+      setNotice(notice)
     } catch {
       setNotice({ text: 'Tab Declutter could not save settings', kind: 'error' })
     } finally { setSaving(false) }

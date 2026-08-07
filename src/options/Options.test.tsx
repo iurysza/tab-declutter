@@ -73,3 +73,14 @@ it('does not revoke when saving fails', async () => {
   expect(await screen.findByText('Tab Declutter could not save settings')).toBeInTheDocument()
   expect(revoke).not.toHaveBeenCalled()
 })
+
+it('reports partial success when revocation fails after save', async () => {
+  const save = vi.fn(async () => {})
+  const request = vi.fn(async () => true)
+  const revoke = vi.fn(async () => { throw new Error('remove failed') })
+  render(<Options api={{ load: vi.fn(async () => ({ providerSettings: { provider: 'openai', apiKey: 'test-key', model: 'test-model' }, customCriteria: [] })), save, request, revoke }} />)
+  await userEvent.selectOptions(screen.getByLabelText('Provider'), 'anthropic')
+  await userEvent.click(await screen.findByRole('button', { name: 'Save settings' }))
+  expect(save).toHaveBeenCalled()
+  expect(await screen.findByText('Settings saved, but Chrome could not remove access to the previous provider')).toBeInTheDocument()
+})

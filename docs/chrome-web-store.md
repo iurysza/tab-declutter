@@ -6,13 +6,11 @@ This checklist follows the current [Chrome Web Store publishing documentation](h
 
 ## 1. Prepare the publisher account
 
-1. Open the [Chrome Developer Dashboard](https://chrome.google.com/webstore/devconsole).
-2. Register as a Chrome Web Store developer and pay the one-time registration fee.
-3. Enable 2-Step Verification on the publishing Google account.
-4. Set the required publisher name.
-5. Add and verify the contact email. Use an address that will be monitored for review, warning, and takedown notices.
+The publishing Google account already exists, is logged in, and is configured as a non-trader developer. Remaining runtime steps:
 
-Google does not let a developer account change its email later. Use the intended long-term publishing identity.
+1. Open the [Chrome Developer Dashboard](https://chrome.google.com/webstore/devconsole).
+2. Re-authenticate with Google if the dashboard prompts for it.
+3. Add and verify the contact email. Use an address that will be monitored for review, warning, and takedown notices.
 
 ## 2. Build the upload package
 
@@ -88,7 +86,7 @@ Required assets:
 
 Suggested set:
 
-1. **Outcome hero:** a real Chrome window grouped into meaningful workstreams (e.g., “Ship feature”, “Compare pricing”, “Review docs”).
+1. **Outcome hero:** an illustrative Chrome-style window grouped into meaningful workstreams (e.g., “Ship feature”, “Compare pricing”, “Review docs”).
 2. The popup showing Workstream, Topic, Intent, and a custom criterion.
 3. BYOK settings with provider, model, key, and base URL fields plus the local-storage privacy message.
 4. Undo restoring the previous layout.
@@ -192,12 +190,13 @@ Repository work done on `release/chrome-store`:
 - privacy policy linked to the public `main` branch URL above;
 - optional host permissions include IPv6 loopback and match the runtime origin logic;
 - previous provider origin is revoked after the new origin is saved and granted;
+- revocation failure is surfaced instead of swallowed;
 - listing copy follows problem → outcome → how it works → privacy/trust → support;
 - permission justifications explain the broad HTTPS declaration and the exact runtime origin request.
 
 Dashboard-only tasks that remain:
 
-- register and verify the long-term publisher account;
+- re-authenticate with Google in the dashboard if prompted;
 - fill Store Listing, Privacy, Distribution, and Test instructions;
 - upload `/tmp/tab-declutter-store.zip` and submit for review;
 - prepare a temporary reviewer credential and exact model ID for Test instructions.
