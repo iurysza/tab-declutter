@@ -1,0 +1,25 @@
+# Facts
+
+- The repository contains a Manifest V3 Chrome extension built with Bun, Vite, React, and TypeScript.
+- A user can group eligible tabs in the active Chrome window with one explicit action.
+- Pinned tabs, tabs without stable identifiers, and split-view tabs are not changed by a grouping action.
+- The extension provides Workstream, Topic, and Intent as built-in grouping criteria.
+- Workstream groups tabs that support the same active task or deliverable and gives each group a meaningful task-oriented name.
+- Topic groups tabs by shared subject, while Intent groups tabs by their immediate activity or purpose.
+- A user can add, edit, select, and remove custom grouping criteria.
+- Ambiguous tabs and classifications containing only one tab remain ungrouped.
+- A user can configure OpenAI, Anthropic, Google, or any compatible OpenAI-style endpoint with their own API key and model identifier.
+- A user can configure an optional provider base URL; remote custom URLs require HTTPS and loopback URLs may use HTTP.
+- Provider settings and custom criteria persist in `chrome.storage.local`; API keys are not synced, logged, or included in user-facing errors.
+- The extension asks for network access only to the configured provider origin from the settings save action.
+- Only tab titles, URLs, and opaque per-request tab references are sent to the configured LLM provider; the extension has no backend or telemetry.
+- Provider output is schema-validated and normalised so unknown references, duplicate assignments, empty names, and singleton groups cannot reach the Chrome mutation adapter.
+- Invalid settings or failed classification leave the current tab arrangement unchanged and produce a short, actionable error.
+- A successful grouping action exposes Undo, which restores the prior order and group membership, name, colour, and collapsed state for tabs that still exist.
+- If applying a grouping plan fails part-way, the extension attempts to restore the captured pre-action snapshot before reporting the failure.
+- The popup keeps grouping, criterion selection, status, settings access, and latest-action Undo on one compact surface.
+- The options page keeps provider configuration and custom-criterion management on one focused surface and explains local key storage and sent tab metadata.
+- Grouping policy, prompt construction, provider-output normalisation, settings parsing, and undo planning are testable without a browser global.
+- Application orchestration is testable with in-memory ports; Chrome APIs and AI SDK provider packages remain in edge adapters.
+- Automated checks cover type safety, linting, pure and application tests, React UI behavior, and a production extension build.
+- Project documentation explains setup, privacy boundaries, Bun commands, provider configuration, and loading the unpacked build in Chrome.
