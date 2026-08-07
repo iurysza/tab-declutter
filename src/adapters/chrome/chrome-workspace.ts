@@ -4,7 +4,7 @@ import { err, ok } from '../../domain/result'
 import { buildRestorePlan } from '../../domain/undo'
 import type { GroupColor, TabRecord, WindowSnapshot } from '../../domain/tabs'
 
-function failure() { return err({ code: 'apply-failed' as const, message: 'Tabs could not be grouped. Use Undo to restore them' }) }
+function failure(message: string) { return err({ code: 'apply-failed' as const, message }) }
 function toRecord(tab: chrome.tabs.Tab): TabRecord | undefined {
   if (tab.id === undefined || !tab.title || !tab.url) return undefined
   return { id: tab.id, windowId: tab.windowId, index: tab.index, title: tab.title, url: tab.url, pinned: tab.pinned, splitViewId: tab.splitViewId, groupId: tab.groupId }
@@ -22,7 +22,7 @@ export const chromeWorkspace: WorkspacePort = {
   async capture() {
     try {
       const tabs = (await chrome.tabs.query({ currentWindow: true })).flatMap((tab) => { const record = toRecord(tab); return record ? [record] : [] })
-      if (!tabs[0]) return failure()
+      if (!tabs[0]) return failure('Could not read tabs in this window')
       const rawGroups = await chrome.tabGroups.query({ windowId: tabs[0].windowId })
       const groups = rawGroups.map((group) => ({
         id: group.id,
@@ -32,7 +32,7 @@ export const chromeWorkspace: WorkspacePort = {
         tabIds: tabs.filter((tab) => tab.groupId === group.id).map((tab) => tab.id),
       }))
       return ok({ windowId: tabs[0].windowId, tabs, groups })
-    } catch { return failure() }
+    } catch { return failure('Could not read tabs in this window') }
   },
 
   async apply(plan: GroupingPlan, snapshot: WindowSnapshot) {
@@ -47,7 +47,7 @@ export const chromeWorkspace: WorkspacePort = {
         await chrome.tabGroups.update(groupId!, { title: group.name, color: group.color, collapsed: false })
       }
       return ok(undefined)
-    } catch { return failure() }
+    } catch { return failure('Tabs could not be grouped. Use Undo to restore them') }
   },
 
   async restore(snapshot: WindowSnapshot) {
@@ -66,6 +66,6 @@ export const chromeWorkspace: WorkspacePort = {
         await chrome.tabGroups.update(groupId!, { title: group.title, color: group.color, collapsed: group.collapsed })
       }
       return ok(undefined)
-    } catch { return failure() }
+    } catch { return failure('The previous tab layout could not be restored') }
   },
 }

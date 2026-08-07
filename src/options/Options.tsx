@@ -28,7 +28,7 @@ export function Options({ api = defaults }: { readonly api?: OptionsApi }) {
   const [criteria, setCriteria] = useState<CustomCriterion[]>([])
   const [notice, setNotice] = useState<{ text: string; kind: 'success' | 'error' }>()
   const [saving, setSaving] = useState(false)
-  useEffect(() => { void api.load().then((data) => { setDraft(toDraft(data.providerSettings)); setCriteria([...data.customCriteria]) }) }, [])
+  useEffect(() => { void api.load().then((data) => { setDraft(toDraft(data.providerSettings)); setCriteria([...data.customCriteria]) }, () => setNotice({ text: 'Threadline could not load settings', kind: 'error' })) }, [])
   const field = (key: keyof Draft, value: string) => setDraft((current) => ({ ...current, [key]: value }))
   const save = async () => {
     setNotice(undefined)
@@ -45,6 +45,8 @@ export function Options({ api = defaults }: { readonly api?: OptionsApi }) {
       if (!(await api.request(parsed.value))) return setNotice({ text: 'Provider access was not allowed', kind: 'error' })
       await api.save(parsed.value, validCriteria)
       setNotice({ text: 'Settings saved', kind: 'success' })
+    } catch {
+      setNotice({ text: 'Threadline could not save settings', kind: 'error' })
     } finally { setSaving(false) }
   }
   const add = () => setCriteria((items) => [...items, { id: crypto.randomUUID(), name: '', instruction: '' }])
