@@ -53,8 +53,49 @@ Status: partial
 - Retried native capture with Peekaboo against `Google Chrome for Testing`; `peekaboo see --app "Google Chrome for Testing" --json` failed with `Capture failed: No displays available for window capture`.
 - Retried frontmost capture after activating Chrome; the same display-capture failure occurred.
 
+## 2026-08-07 — Manual smoke retry after browser restart
+
+Status: partial
+
+### Completed
+
+- Confirmed the clean Chrome for Testing window via `peekaboo list windows --app "Google Chrome for Testing" --json`; window ID `8721` was the visible page window.
+- Confirmed Peekaboo still could not capture that window: `peekaboo see --app "Google Chrome for Testing" --window-id 8721 --json` failed with `Capture failed: No displays available for window capture`.
+- Loaded the settings page at `chrome-extension://cggbiaollmchknafdbgmcpinpecjbjdd/src/options/index.html` in the clean profile.
+- Verified the options page text: provider selector, model/key/base URL inputs, criteria section, and Save settings button.
+- Set the options form to `openai-compatible`, model `threadline-fixture`, API key `dummy-fixture-key`, and base URL `http://localhost:63816/v1` with CDP input events.
+- Triggered the real Save button with `Runtime.evaluate(..., userGesture:true)` and observed `Saving…` in the UI.
+
 ### Not completed
 
-- Exact optional-host permission denial could not be captured in-browser because Peekaboo could not capture the Chrome window in this environment.
-- Successful settings save through the UI could not be completed.
-- Grouping, Undo, safe provider failure on the approved local origin, and console/service-worker error checks remain open.
+- The permission bubble itself could not be inspected or clicked because Peekaboo window capture failed in this environment.
+- `chrome.storage.local` still read back empty after the Save attempt, so the fixture-save assertion is not met.
+- Grouping, Undo, safe provider failure on the approved local origin, popup success state, and console/service-worker error checks remain open.
+
+## 2026-08-07 — Manual smoke with native key delivery in Chrome 150
+
+Status: completed, with screenshot capture failure
+
+### Completed
+
+- Resolved the main Chrome for Testing PID as `20751` via `lsof -i :9224` and `ps -p`.
+- Filled the options form using `Input.insertText` CDP events so React controlled state updated.
+- **Denial assertion**: set provider `openai-compatible`, model `threadline-fixture`, key `dummy-deny-key`, base URL `https://example-provider.com/v1`; clicked Save with `userGesture:true`; sent keycode `53` (Escape) to PID `20751` via `/tmp/send-key-to-pid`.
+  - Poll result: options body contained `Provider access was not allowed` and `chrome.permissions.contains({origins:['https://example-provider.com/*']})` returned `false`.
+- **Grant and save assertion**: reloaded options, set provider `openai-compatible`, model `threadline-fixture`, key `dummy-fixture-key`, base URL `http://localhost:63816/v1`; clicked Save with `userGesture:true`; sent keycode `36` (Return) to PID `20751`.
+  - Poll result: options body contained `Settings saved`, `chrome.permissions.contains({origins:['http://localhost:63816/*']})` returned `true`, and `chrome.storage.local.get('providerSettings')` returned the fixture settings including model `threadline-fixture`.
+- **Grouping assertion**: pinned the settings tab (`1777733284`); pre-grouped `https://example.com/` (tab `1777733285`) and `https://example.org/` (tab `1777733286`) as `Before smoke` with `color: blue`, `collapsed: true`; opened the popup and clicked `Organise current window`.
+  - Result: `chrome.tabGroups.query()` showed a single group with `title: "Fixture workstream"`, `color: "blue"`, `collapsed: false`, containing both example tabs. The pinned settings tab and the popup tab were not grouped.
+- **Undo assertion**: clicked `Undo last grouping` in the popup.
+  - Result: both example tabs restored to a group titled `Before smoke`, `color: blue`, `collapsed: true`, at indices `1` and `2` with the pinned settings tab still at index `0`.
+- **Safe provider failure assertion**: changed the saved base URL to `http://localhost:63816/bad-path/v1` on the already-approved localhost origin; clicked Save; clicked `Organise current window` in the popup.
+  - Result: popup body showed `The provider could not complete the request`. The tab group remained `Before smoke` (no mutation). The error text did not contain the API key or any provider response body.
+- **Console/service-worker error inspection**: enabled `Console` and `Runtime` domains on the options and popup targets; no `Console.messageAdded` or `Runtime.exceptionThrown` events were observed during the test sequence.
+
+### Not completed
+
+- Screenshot capture failed in this environment:
+  - `Page.captureScreenshot` over CDP timed out for both options and popup targets.
+  - `peekaboo see --app "Google Chrome for Testing" --window-id 8721` and screen-capture modes failed with `Capture failed: No displays available for window capture` / `Failed to capture any screens`.
+  - `screencapture -l 8721` failed with `could not create image from window`.
+  - Existing `/tmp/threadline-options.png` is from an earlier attempt and does not reflect the completed pass; `/tmp/threadline-popup.png` was not created.
