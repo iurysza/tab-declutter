@@ -1,0 +1,8 @@
+body { width: 360px; }
+.popup-shell { display: grid; gap: 14px; padding: 16px; }
+.popup-shell header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #dde1ec; }
+.intro { padding-top: 2px; }
+.eyebrow { margin: 0 0 5px; color: #697386; }
+h1 { margin: 0; font-size: 24px; line-height: 1.08; letter-spacing: -.035em; max-width: 290px; }
+.criterion-copy { margin: -7px 2px 0; min-height: 17px; color: #697386; font-size: 12px; }
+.undo { justify-self: start; }
