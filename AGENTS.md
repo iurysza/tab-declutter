@@ -14,3 +14,6 @@
 - Make core behavior testable without Chrome.
 - Keep the user interface minimal, clear, and intentional.
 - Never log, expose, or commit API keys.
+
+## Git commits
+Never include Cursor (or any Cursor agent/bot) as git author, committer, or in a Co-authored-by / similar trailer.
