@@ -1,15 +1,41 @@
-# Privacy
+# Privacy policy
 
-Tab Declutter is client-only. It has no backend, user account, telemetry, advertising, or remote code.
+Last updated: 26 September 2026, for version 0.2.0.
 
-## Stored locally
+Tab Declutter runs entirely in your browser. It has no backend, user account, telemetry, advertising, or remote code. Tab Declutter's developer receives none of your data.
 
-`chrome.storage.local` stores the active provider, API key, model, optional base URL, selected criterion, and custom criteria. The service worker restricts local storage to trusted extension contexts. `chrome.storage.session` stores one crash-recoverable grouping/Undo snapshot containing tab IDs, order, and group metadata; it is scoped to the browser session.
+## What is stored in your browser
 
-## Sent to the provider
+`chrome.storage.local` stores your chosen provider, API key, model ID, optional base URL, last-used lens, and custom lenses. Only trusted extension pages can read it.
 
-Tab Declutter sends the selected grouping criterion's name and instruction. For each eligible tab in the active window, it also sends a temporary reference, title, and minimised URL. URL credentials, query strings, fragments, and local file paths are removed first. Provider credentials are sent only to the configured provider as required for authentication.
+`chrome.storage.session` stores one Undo snapshot: tab IDs, tab order, and group names, colors, and collapsed state. Chrome clears it when the browser session ends.
 
-## Never collected
+## What is sent to your AI provider
 
-Tab Declutter does not read or collect page contents, Chrome browsing history, bookmarks, cookies, form values, or browser identity. It does not log API keys or provider response bodies. Network permission is requested from a user gesture for the configured origin.
+Data is sent only when you select **Group tabs** in the popup or press the keyboard shortcut. It goes directly to the provider you configured. That provider's own privacy policy then applies.
+
+Each request contains:
+
+- the name and instruction of the lens you picked;
+- for each eligible tab in the active window: a temporary reference such as `T1`, the tab title, and the URL with credentials, query string, fragment, and local file paths removed.
+
+When you use the **Session** lens, each tab may also include:
+
+- a rounded time since you last used it, such as "just now", "25 min ago", or "yesterday". Exact timestamps are never sent;
+- the temporary reference of the tab that opened it, if that tab is still open. Chrome tab IDs are never sent.
+
+Other lenses never send time or opener information.
+
+Your API key is sent only to your configured provider, to authenticate the request.
+
+## What is never collected
+
+Tab Declutter does not read or collect page contents, browsing history, bookmarks, cookies, form data, or your identity. Pinned and split-view tabs are never sent. It does not log API keys, tab data, or provider responses.
+
+## Network access
+
+Chrome asks you to allow access to your provider's address when you select **Save settings**. Tab Declutter requests access to that one address only. When you switch providers, it removes access to the previous one.
+
+## Contact
+
+Report problems at <https://github.com/iurysza/tab-declutter/issues>.
