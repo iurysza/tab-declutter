@@ -7,7 +7,18 @@ import type { GroupColor, TabRecord, WindowSnapshot } from '../../domain/tabs'
 function failure(message: string) { return err({ code: 'apply-failed' as const, message }) }
 function toRecord(tab: chrome.tabs.Tab): TabRecord | undefined {
   if (tab.id === undefined || !tab.title || !tab.url) return undefined
-  return { id: tab.id, windowId: tab.windowId, index: tab.index, title: tab.title, url: tab.url, pinned: tab.pinned, splitViewId: tab.splitViewId, groupId: tab.groupId }
+  return {
+    id: tab.id,
+    windowId: tab.windowId,
+    index: tab.index,
+    title: tab.title,
+    url: tab.url,
+    pinned: tab.pinned,
+    splitViewId: tab.splitViewId,
+    groupId: tab.groupId,
+    ...(tab.lastAccessed !== undefined ? { lastAccessed: tab.lastAccessed } : {}),
+    ...(tab.openerTabId !== undefined ? { openerTabId: tab.openerTabId } : {}),
+  }
 }
 async function surviving(ids: readonly number[]): Promise<number[]> {
   const values = await Promise.all(ids.map(async (id) => { try { await chrome.tabs.get(id); return id } catch { return undefined } }))

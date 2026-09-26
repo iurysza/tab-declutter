@@ -29,10 +29,12 @@ export interface PermissionPort { contains(settings: ProviderSettings): Promise<
 export interface ClassifierPort {
   classify(settings: ProviderSettings, prompt: ClassificationPrompt): Promise<Result<ModelClassification, AppError>>
 }
+export interface ClockPort { now(): number }
 export interface AppPorts {
   readonly workspace: WorkspacePort
   readonly settings: SettingsPort
   readonly undo: UndoPort
   readonly permission: PermissionPort
   readonly classifier: ClassifierPort
+  readonly clock: ClockPort
 }
