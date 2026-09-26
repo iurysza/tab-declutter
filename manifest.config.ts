@@ -5,7 +5,7 @@ export default defineManifest({
   manifest_version: 3,
   name: 'Tab Declutter',
   description: 'AI tab groups for Chrome, with your own API key. Pick a lens, group in one click, undo in one click.',
-  version: '0.1.1',
+  version: '0.2.0',
   minimum_chrome_version: '140',
   permissions: ['tabs', 'tabGroups', 'storage'],
   optional_host_permissions: ['https://*/*', 'http://localhost/*', 'http://127.0.0.1/*', 'http://[::1]/*'],
