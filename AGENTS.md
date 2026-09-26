@@ -16,19 +16,14 @@ Tab Declutter is a Chrome extension that groups tabs via an LLM into named group
 - Make core behavior testable without Chrome.
 - Keep the user interface minimal, clear, and intentional.
 - Never log, expose, or commit API keys.
+- Use American English spelling in code, UI copy, and docs.
 
 ## How it works
 
-How-it-works docs live under `ai-artifacts/`. Start at `ai-artifacts/goals/llm-tab-grouping/`. When architecture or behavior changes, update these files.
+Read [ai-artifacts/architecture/README.md](ai-artifacts/architecture/README.md) before changing layers, flows, or what is sent to the provider. It covers the layer map, the group, undo, and shortcut flows with failure paths, and the privacy boundary. When architecture or behavior changes, update it.
 
-| File | Contents |
-| --- | --- |
-| [goal.md](ai-artifacts/goals/llm-tab-grouping/goal.md) | Contract and done-when |
-| [intent.md](ai-artifacts/goals/llm-tab-grouping/intent.md) | Outcome, scope, and non-goals |
-| [facts.md](ai-artifacts/goals/llm-tab-grouping/facts.md) | Accepted behavior |
-| [facts.meta.json](ai-artifacts/goals/llm-tab-grouping/facts.meta.json) | Verification metadata for each fact |
-| [plan.md](ai-artifacts/goals/llm-tab-grouping/plan.md) | Design and implementation plan |
-| [dev-log.md](ai-artifacts/goals/llm-tab-grouping/dev-log.md) | Development log |
+- Any new data sent to the provider must also update `docs/privacy.md`, the Options privacy note, and the store data disclosure in `docs/chrome-web-store.md`.
+- Regenerate icons and store images with `store-assets/generate.sh`. Never edit the PNGs by hand.
 
 ## Commands
 

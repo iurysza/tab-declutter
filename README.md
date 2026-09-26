@@ -4,43 +4,50 @@
 
 <h1 align="center">Tab Declutter</h1>
 
-<p align="center"><strong>Turn a crowded Chrome window into named threads.</strong></p>
+<p align="center"><strong>AI tab groups for Chrome, with your own API key.</strong></p>
 
 <p align="center">
   <a href="https://github.com/iurysza/tab-declutter/releases/latest"><img src="https://img.shields.io/github/v/release/iurysza/tab-declutter?display_name=tag&sort=semver" alt="Latest release"></a>
   <img src="https://img.shields.io/badge/Chrome-140%2B-4285F4" alt="Chrome 140 or newer">
-  <img src="https://img.shields.io/badge/Manifest-V3-5A63D8" alt="Manifest V3">
+  <img src="https://img.shields.io/badge/Manifest-V3-4338CA" alt="Manifest V3">
 </p>
 
-Tab Declutter groups open tabs into named workstreams with your chosen LLM—private, local, one-click Undo.
+<p align="center">
+  <img src="store-assets/screenshot-1280x800.png" width="720" alt="Tab Declutter popup after grouping 12 tabs into four named groups">
+</p>
 
-Pick a grouping lens, organise once, and undo the result in one click.
+Tab Declutter sorts the tabs in your current Chrome window into named tab groups. It asks the AI provider you choose, using your own API key. Pick a lens, click once, and undo in one click if you don't like the result.
 
-```text
-current window  →  Workstream / Topic / Intent  →  named tab groups  →  Undo
-```
+## What it does
 
-## Why
+Tab groups only help when someone names and maintains them. Tab Declutter does that work when you ask. It never runs in the background and never touches other windows.
 
-Tab groups help only when someone names and maintains them. Tab Declutter does that work when you ask—never in the background and never across every window.
+Choose a **lens** to decide what "belongs together" means:
 
-- **Workstream** groups tabs that support the same task or deliverable.
-- **Topic** groups tabs about the same subject.
-- **Intent** groups tabs used for the same activity, such as comparing or writing.
-- **Custom criteria** let you define another grouping lens.
-- **Undo** restores the previous order, membership, group name, colour, and collapsed state for tabs that still exist.
+| Lens | Groups tabs by | Example group names |
+| --- | --- | --- |
+| **Project** (default) | the goal they serve, across sites | "Fix login redirect", "Find a flat" |
+| **Topic** | the subject they are about | "Kotlin coroutines", "Berlin flats" |
+| **Session** | when you opened or last used them | "Just now: CI failure", "Yesterday: flat search" |
+| **Next step** | what you still need to do | "Act now", "Read later", "Reference", "Probably done" |
 
-Pinned and split-view tabs stay untouched. Ambiguous tabs and one-tab classifications stay ungrouped.
+You can also write your own lens in Settings.
+
+- **Undo** restores the previous order, groups, names, colors, and collapsed state for tabs that still exist.
+- **Keyboard shortcut:** press <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd> (<kbd>⌥⇧G</kbd> on macOS) to group with your last-used lens without opening the popup. The toolbar badge shows progress and the number of groups made. Change the shortcut at `chrome://extensions/shortcuts`.
+- Pinned and split-view tabs stay where they are. Tabs that don't clearly fit stay ungrouped.
 
 ## Install
 
-Requires Chrome 140 or newer.
+Tab Declutter is on the Chrome Web Store. To install a release by hand instead:
 
-1. Download `tab-declutter-v0.1.1.zip` from the [latest release](https://github.com/iurysza/tab-declutter/releases/latest).
+1. Download `tab-declutter-v0.2.0.zip` from the [latest release](https://github.com/iurysza/tab-declutter/releases/latest).
 2. Unzip it.
 3. Open `chrome://extensions`.
 4. Turn on **Developer mode**.
 5. Select **Load unpacked** and choose the unzipped folder.
+
+Requires Chrome 140 or newer.
 
 ### Build from source
 
@@ -53,48 +60,53 @@ bun run build
 
 Load the generated `dist/` folder from `chrome://extensions`.
 
-## Set up a provider
+## Connect a provider
 
 1. Open Tab Declutter **Settings**.
-2. Choose a provider and enter its exact model ID and your API key.
+2. Choose a provider, then enter the exact model ID and your API key.
 3. For an OpenAI-compatible service, add its base URL.
-4. Select **Save settings** and approve access to that provider origin.
-5. Open the popup, choose a criterion, and select **Organise current window**.
+4. Select **Save settings** and allow access to that provider when Chrome asks.
+5. Open the popup, pick a lens, and select **Group N tabs**.
 
-| Provider | Configuration |
+| Provider | You need |
 | --- | --- |
 | OpenAI | API key and model ID |
 | Anthropic | API key and model ID |
 | Google Generative AI | API key and model ID |
 | OpenAI-compatible | API key, model ID, and base URL |
 
-Remote custom endpoints must use HTTPS. `localhost`, `127.0.0.1`, and `[::1]` may use HTTP for local models and development.
-
-Your API key stays in `chrome.storage.local` in this Chrome profile and is sent only to authenticate requests to your chosen provider. Undo state stays in `chrome.storage.session`. Chrome asks for provider access only after you select **Save settings**.
+Custom endpoints must use HTTPS. `localhost`, `127.0.0.1`, and `[::1]` may use HTTP for development.
 
 ## Privacy
 
-Tab Declutter has no account, backend, analytics, or telemetry. It uses no content scripts.
+Tab Declutter has no account, backend, analytics, or telemetry. It uses no content scripts. Requests go straight from your browser to the provider you chose.
 
-A classification request sends the selected grouping instruction plus each eligible tab's title, minimised URL, and temporary reference such as `T1`. Tab Declutter removes URL credentials, query strings, fragments, and local file paths. It never reads page contents, Chrome browsing history, bookmarks, cookies, or form data.
+A grouping request sends:
 
-Your API key stays in `chrome.storage.local` in this Chrome profile. Undo state stays in `chrome.storage.session`. Chrome asks for provider access only after you select **Save settings**.
+- the lens name and instruction;
+- each eligible tab's title and URL, with credentials, query strings, fragments, and local file paths removed;
+- a temporary reference such as `T1` instead of Chrome's tab ID;
+- for the **Session** lens only: a rounded time since each tab was last used, such as "25 min ago", and which tab opened it, as a `T` reference.
 
-Required permissions:
+Tab Declutter never reads page contents, browsing history, bookmarks, cookies, or form data.
 
-- `tabs` reads and organises tabs in the active window.
+Your API key stays in `chrome.storage.local` in this Chrome profile. It is only sent to your provider to authenticate. The Undo snapshot stays in `chrome.storage.session`. Chrome asks for provider access only when you select **Save settings**.
+
+Permissions:
+
+- `tabs` reads and organizes tabs in the active window.
 - `tabGroups` creates, names, and restores groups.
-- `storage` keeps settings and one recoverable Undo snapshot.
+- `storage` keeps settings and one Undo snapshot.
 
 Read the full [privacy policy](docs/privacy.md).
 
 ## How grouping stays safe
 
-Tab Declutter validates settings and structured model output before changing a tab. Unknown references, duplicate assignments, blank names, ambiguous results, and singleton groups are discarded.
+Tab titles and URLs are treated as untrusted data. The model's answer is checked against a schema before any tab moves. Unknown references, duplicate assignments, blank names, and one-tab groups are dropped.
 
-Before the first mutation, Tab Declutter saves the current layout in session storage. If grouping fails partway through, it restores that snapshot. If restoration also fails, the snapshot remains available through Undo.
+Before the first change, Tab Declutter saves the current layout. If grouping fails partway through, it restores that layout. If restoring also fails, the snapshot stays available through Undo.
 
-## No-key demo
+## Try it without a key
 
 Run the local OpenAI-compatible fixture:
 
@@ -102,7 +114,7 @@ Run the local OpenAI-compatible fixture:
 bun run mock:provider
 ```
 
-In Settings, choose **OpenAI-compatible**, use the printed base URL, set the model to `tab-declutter-fixture`, and enter any non-empty development key. The fixture groups `T1` and `T2` as **Fixture workstream**.
+In Settings, choose **OpenAI-compatible**, use the printed base URL, set the model to `tab-declutter-fixture`, and enter any non-empty key. The fixture groups `T1` and `T2` as **Fixture workstream**.
 
 ## Development
 
@@ -114,21 +126,25 @@ bun run dev
 bun run check
 ```
 
-`bun run check` runs strict TypeScript, Oxlint, browser-free tests, the production build, and project-contract verification.
+`bun run check` runs strict TypeScript, Oxlint, the tests, the production build, and the project contract check.
 
-The functional core under `src/domain/` has no Chrome dependency. Application use cases depend on ports and run against in-memory fakes. Chrome storage, tab mutation, permissions, and AI SDK calls live under `src/adapters/`.
+Domain logic in `src/domain/` has no Chrome dependency. Use cases in `src/application/` depend on ports and are tested with in-memory fakes. Chrome, storage, and AI SDK calls live in `src/adapters/`. Read the [architecture guide](ai-artifacts/architecture/README.md) for the full map.
+
+Store images are generated from the real UI with `store-assets/generate.sh`.
 
 ## Documentation
 
+- [Architecture guide](ai-artifacts/architecture/README.md)
 - [Privacy policy](docs/privacy.md)
 - [Chrome Web Store publishing guide](docs/chrome-web-store.md)
-- [AI SDK architecture decision](docs/decisions/ADR-0001-use-ai-sdk-in-service-worker.md)
+- [Decision records](docs/decisions/INDEX.md)
 
 ## Limits
 
 - Chrome only.
 - Active window only.
 - One level of Undo.
-- Closed tabs cannot be restored.
-- OpenAI-compatible providers must implement the API shape expected by the AI SDK adapter.
-- Exact restoration is best-effort if tabs move, open, or close during grouping or Undo.
+- Closed tabs can't be restored.
+- The Session lens can't see when a tab was opened, because Chrome doesn't expose it. It uses last-used time, which tab opened it, and tab order instead.
+- OpenAI-compatible providers must support the API shape the AI SDK expects.
+- Restoring is best-effort if tabs move, open, or close during grouping or Undo.

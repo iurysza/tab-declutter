@@ -34,4 +34,4 @@ Use official OpenAI, Anthropic, and Google adapters plus the OpenAI-compatible a
 
 ## Related
 
-- [LLM tab grouping plan](../../ai-artifacts/goals/llm-tab-grouping/plan.md)
+- [Architecture guide](../../ai-artifacts/architecture/README.md)
