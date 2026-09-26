@@ -1,156 +1,325 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=1280" />
-<title>Tab Declutter product screenshot</title>
+<meta charset="utf-8">
+<!-- Store screenshot. Rendered at 1920x1200 CSS px and captured at 1280x800 by generate.sh. real.js is generated from src/ by extract-real.tsx. Pass ?t=seconds to pick the scene. -->
+<link rel="stylesheet" href="../src/ui/theme.css">
+<link rel="stylesheet" href="../src/popup/popup.css">
+<script src="real.js"></script>
 <style>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    width: 1280px;
-    height: 800px;
-    overflow: hidden;
-    background: #e9eaf2;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  }
-  .chrome-window {
-    width: 1280px;
-    height: 800px;
-    background: #fff;
-    display: grid;
-    grid-template-rows: 42px 38px 1fr;
-  }
-  /* Title bar */
-  .titlebar {
-    background: #dee1e6;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 0 12px;
-  }
-  .window-controls { display: flex; gap: 8px; }
-  .dot { width: 11px; height: 11px; border-radius: 50%; }
-  .dot.close { background: #ff5f57; }
-  .dot.min { background: #febc2e; }
-  .dot.max { background: #28c840; }
-  .address { flex: 1; height: 30px; background: #fff; border-radius: 15px; margin: 0 70px; display: flex; align-items: center; padding: 0 14px; color: #5f6368; font-size: 13px; }
-  /* Tab bar */
-  .tabbar {
-    background: #fff;
-    display: flex;
-    align-items: flex-end;
-    padding: 0 6px;
-    gap: 4px;
-    border-bottom: 1px solid #dadce0;
-  }
-  .tab {
-    height: 34px;
-    padding: 0 12px;
-    border-radius: 10px 10px 0 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    color: #3c4043;
-    background: #f1f3f4;
-    min-width: 120px;
-    max-width: 200px;
-  }
-  .tab.active { background: #fff; border: 1px solid #dadce0; border-bottom: 0; }
-  .tab img { width: 14px; height: 14px; border-radius: 50%; background: #9aa0a6; }
-  .tab span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-  /* Groups */
-  .tabbar-group {
-    display: flex;
-    align-items: flex-end;
-    gap: 2px;
-    padding: 2px 4px;
-    border-radius: 10px 10px 0 0;
-    color: #fff;
-    font-size: 11px;
-    font-weight: 600;
-    height: 36px;
-  }
-  .tabbar-group.blue { background: #8ab4f8; }
-  .tabbar-group.green { background: #81c995; }
-  .tabbar-group.yellow { background: #fdd663; color: #202124; }
-  .tabbar-group .tab {
-    background: rgba(255,255,255,.92);
-    color: #3c4043;
-  }
-  /* Page content */
-  .page {
-    background: #f8f9fa;
-    display: grid;
-    place-items: center;
-    position: relative;
-  }
-  .content-card {
-    width: 640px;
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(60,64,67,.12);
-    padding: 32px;
-  }
-  .content-card h2 { margin: 0 0 8px; font-size: 24px; color: #202124; }
-  .content-card p { margin: 0; color: #5f6368; font-size: 15px; line-height: 1.5; }
-  .badge {
-    position: absolute;
-    right: 40px;
-    top: 40px;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(60,64,67,.18);
-    padding: 16px;
-    width: 320px;
-  }
-  .badge h3 { margin: 0 0 8px; font-size: 15px; color: #202124; }
-  .badge ul { margin: 0; padding-left: 18px; color: #5f6368; font-size: 13px; line-height: 1.6; }
+html, body { margin: 0; width: 1920px; height: 1200px; overflow: hidden; }
+body { width: 1920px !important; background: #0b0a12; font-family: var(--font); color: var(--text); font-size: 13px; -webkit-font-smoothing: antialiased; }
+#stage { position: absolute; inset: 0; background: radial-gradient(1300px 800px at 25% 10%, #25215a 0%, #110f1f 55%, #09090e 100%); }
+#win { position: absolute; left: 60px; top: 48px; width: 1800px; height: 1104px; border-radius: 18px; background: #1c1c20; box-shadow: 0 0 0 1px rgb(255 255 255 / 0.08), 0 40px 100px rgb(0 0 0 / 0.6); overflow: hidden; }
+#strip { position: absolute; left: 0; top: 0; right: 0; height: 64px; background: #141417; }
+.lights { position: absolute; left: 26px; top: 25px; display: flex; gap: 10px; }
+.lights i { width: 14px; height: 14px; border-radius: 50%; display: block; }
+#tabs { position: absolute; left: 120px; top: 10px; right: 24px; height: 54px; }
+.tab { position: absolute; top: 0; height: 54px; display: flex; align-items: center; gap: 10px; padding: 0 14px; box-sizing: border-box; border-radius: 12px 12px 0 0; color: #c4c4cc; font-size: 17px; white-space: nowrap; overflow: hidden; }
+.tab.active { background: #26262b; color: #f4f4f5; }
+.fav { flex: none; width: 22px; height: 22px; border-radius: 6px; display: grid; place-items: center; font-size: 12px; font-weight: 700; color: #fff; }
+.tab .t { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.tab .sep { position: absolute; right: 0; top: 17px; bottom: 17px; width: 1px; background: #34343a; }
+.tab .ul { position: absolute; left: 4px; right: 4px; bottom: 0; height: 3px; border-radius: 2px 2px 0 0; }
+.chip { position: absolute; top: 11px; height: 32px; border-radius: 9px; padding: 0 13px; box-sizing: border-box; display: flex; align-items: center; font-size: 17px; font-weight: 650; color: #16161a; white-space: nowrap; overflow: hidden; }
+#toolbar { position: absolute; left: 0; right: 0; top: 64px; height: 64px; background: #26262b; display: flex; align-items: center; gap: 18px; padding: 0 22px; color: #a1a1aa; box-sizing: border-box; border-bottom: 1px solid #34343a; }
+#omni { flex: 1; height: 42px; border-radius: 21px; background: #1a1a1e; display: flex; align-items: center; gap: 12px; padding: 0 20px; font-size: 18px; color: #c4c4cc; }
+#omni .lock { width: 10px; height: 10px; border-radius: 3px; background: #71717a; }
+#ext { position: relative; width: 42px; height: 42px; display: grid; place-items: center; border-radius: 21px; }
+#ext .brand-mark { width: 26px; height: 26px; }
+#ring { position: absolute; inset: -6px; border-radius: 50%; box-shadow: 0 0 0 2px #818cf8; opacity: 0; }
+#badge { position: absolute; right: -9px; bottom: -6px; min-width: 26px; height: 22px; padding: 0 6px; border-radius: 7px; font-size: 15px; font-weight: 700; color: #fff; display: grid; place-items: center; box-sizing: border-box; box-shadow: 0 0 0 2px #26262b; }
+#avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #ef4444); }
+#page { position: absolute; left: 0; right: 0; top: 128px; bottom: 0; background: linear-gradient(180deg, #1c1c20, #19191d); }
+
+#popwrap { position: absolute; top: 136px; right: 104px; transform-origin: top right; }
+#popwrap .frame { width: 340px; background: var(--bg); border-radius: 10px; box-shadow: 0 0 0 1px rgb(255 255 255 / 0.1), 0 12px 32px rgb(0 0 0 / 0.5); overflow: hidden; }
+#lenswrap { position: absolute; top: 250px; right: 150px; width: 340px; transform: scale(1.75); transform-origin: top right; }
+
+#captions { position: absolute; left: 60px; top: 176px; width: 1020px; height: 976px; pointer-events: none; }
+.block { position: absolute; left: 110px; top: 0; bottom: 0; width: 1000px; display: flex; flex-direction: column; justify-content: center; }
+.cap { font-size: 88px; font-weight: 700; letter-spacing: -0.035em; line-height: 1.04; color: #f4f4f5; }
+.cap em { font-style: normal; color: #a5b4fc; }
+.sub { font-size: 34px; color: #a1a1aa; margin-top: 26px; letter-spacing: -0.01em; }
+.line { display: block; }
+.keys { display: flex; gap: 18px; margin-top: 40px; }
+.key { width: 118px; height: 118px; border-radius: 22px; background: #2a2a30; display: grid; place-items: center; font-size: 54px; font-weight: 600; color: #f4f4f5; box-shadow: 0 0 0 1px rgb(255 255 255 / 0.1), 0 6px 0 #17171b, 0 10px 24px rgb(0 0 0 / 0.4); }
+
+#overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none; }
+#overlay .brand-mark { width: 150px; height: 150px; filter: drop-shadow(0 14px 40px rgb(67 56 202 / 0.6)); }
+#overlay .name { font-size: 118px; font-weight: 750; letter-spacing: -0.045em; color: #fff; margin-top: 34px; line-height: 1; }
+#overlay .tag { font-size: 42px; color: #d4d4d8; margin-top: 26px; letter-spacing: -0.015em; }
+#overlay .small { font-size: 28px; color: #a1a1aa; margin-top: 22px; }
+
+#cursor { position: absolute; left: 0; top: 0; width: 34px; height: 34px; }
+#click { position: absolute; width: 60px; height: 60px; margin: -30px 0 0 -30px; border-radius: 50%; box-shadow: 0 0 0 3px #a5b4fc; opacity: 0; }
 </style>
 </head>
 <body>
-  <div class="chrome-window">
-    <div class="titlebar">
-      <div class="window-controls">
-        <div class="dot close"></div>
-        <div class="dot min"></div>
-        <div class="dot max"></div>
-      </div>
-      <div class="address">github.com/iurysza/tab-declutter</div>
+<div id="stage">
+  <div id="win">
+    <div id="strip">
+      <div class="lights"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div>
+      <div id="tabs"></div>
     </div>
-    <div class="tabbar">
-      <div class="tabbar-group blue" title="Ship feature">
-        <div class="tab"><span>GitHub PR</span></div>
-        <div class="tab"><span>Linear issue</span></div>
-        <div class="tab active"><span>Vercel preview</span></div>
-      </div>
-      <div class="tabbar-group green" title="Compare pricing">
-        <div class="tab"><span>OpenAI pricing</span></div>
-        <div class="tab"><span>Anthropic console</span></div>
-      </div>
-      <div class="tabbar-group yellow" title="Review docs">
-        <div class="tab"><span>AI SDK docs</span></div>
-        <div class="tab"><span>Manifest V3</span></div>
-      </div>
-      <div class="tab"><span>Settings</span></div>
-      <div class="tab"><span>Personal</span></div>
+    <div id="toolbar">
+      <span id="i-back"></span><span id="i-fwd"></span><span id="i-reload"></span>
+      <div id="omni"><span class="lock"></span><span id="url"></span></div>
+      <div id="ext"><div id="ring"></div><span id="extmark"></span><div id="badge"></div></div>
+      <span id="i-puzzle"></span>
+      <div id="avatar"></div>
     </div>
-    <div class="page">
-      <div class="content-card">
-        <h2>One click, named workstreams</h2>
-        <p>Tab Declutter read the active window, sent only eligible tab titles and minimised URLs to the chosen provider, and created the groups you see above. Undo restores the previous layout.</p>
-      </div>
-      <div class="badge">
-        <h3>What just happened</h3>
-        <ul>
-          <li>Pinned and split-view tabs stayed untouched</li>
-          <li>Singletons and ambiguous tabs stayed ungrouped</li>
-          <li>Custom lens available alongside Workstream, Topic, Intent</li>
-          <li>One-click Undo reverts order, membership, names, and colour</li>
-        </ul>
-      </div>
-    </div>
+    <div id="page"></div>
+    <div id="popwrap"><div class="frame">
+      <main class="popup">
+        <header class="popup-header">
+          <div class="brand"><span id="popmark"></span><strong>Tab Declutter</strong></div>
+          <button class="button button-ghost button-icon" id="i-settings"></button>
+        </header>
+        <fieldset class="lenses" id="poplenses"><legend>Group tabs by</legend></fieldset>
+        <div class="popup-actions">
+          <button class="button button-primary button-large" id="groupbtn"></button>
+          <div role="status" class="notice notice-success result" id="result"><span>Made 4 groups from 12 tabs</span><button class="result-undo">Undo</button></div>
+        </div>
+        <p class="shortcut"><kbd>⌥⇧G</kbd> groups with this lens. <button class="link">Change</button></p>
+      </main>
+    </div></div>
   </div>
+  <div id="lenswrap"><fieldset class="lenses" id="showlenses"><legend>Group tabs by</legend></fieldset></div>
+
+  <div id="captions">
+    <div class="block" id="c1"><div class="cap"><span class="line">14 tabs open.</span><span class="line">Which one was the <em>CI run</em>?</span></div></div>
+    <div class="block" id="c2"><div class="cap"><span class="line">Pick a lens.</span><span class="line">Click once.</span></div></div>
+    <div class="block" id="c3"><div class="cap"><span class="line">Named groups.</span><span class="line">One-click <em>Undo</em>.</span></div></div>
+    <div class="block" id="c4"><div class="cap"><span class="line">Same tabs.</span><span class="line">Four lenses.</span></div></div>
+    <div class="block" id="c5"><div class="cap"><span class="line">Or skip</span><span class="line">the popup.</span></div>
+      <div class="keys"><div class="key">⌥</div><div class="key">⇧</div><div class="key">G</div></div>
+      <div class="sub">Groups with your last-used lens.</div></div>
+  </div>
+
+  <div id="overlay">
+    <span id="ovmark"></span>
+    <div class="name">Tab Declutter</div>
+    <div class="tag" id="ovtag"></div>
+    <div class="small" id="ovsmall">On the Chrome Web Store · v0.2.0</div>
+  </div>
+
+  <div id="click"></div>
+  <svg id="cursor" viewBox="0 0 24 24"><path d="M4 2.5 L4 19 L8.3 15 L11.2 21.5 L14 20.3 L11.2 13.9 L17 13.9 Z" fill="#fff" stroke="#111" stroke-width="1.3" stroke-linejoin="round"/></svg>
+</div>
+
+<script>
+const R = window.REAL
+const $ = (s) => document.querySelector(s)
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v))
+const lerp = (a, b, p) => a + (b - a) * p
+const ease = (p) => { p = clamp(p); return 1 - Math.pow(1 - p, 3) }
+const inOut = (p) => { p = clamp(p); return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2 }
+const win01 = (t, a, b) => clamp((t - a) / (b - a))
+// fade in over [a, a+d], out over [b-d2, b]
+const vis = (t, a, b, d = 0.3, d2 = 0.2) => Math.min(ease(win01(t, a, a + d)), 1 - win01(t, b - d2, b))
+
+// Static real assets
+$('#extmark').innerHTML = R.mark; $('#popmark').innerHTML = R.mark; $('#ovmark').innerHTML = R.mark
+$('#popmark svg').setAttribute('width', 22); $('#popmark svg').setAttribute('height', 22)
+$('#i-back').innerHTML = R.back; $('#i-fwd').innerHTML = R.fwd; $('#i-reload').innerHTML = R.reload
+$('#i-puzzle').innerHTML = R.puzzle; $('#i-settings').innerHTML = R.settings; $('#result').insertAdjacentHTML('afterbegin', R.check)
+for (const target of ['#poplenses', '#showlenses']) {
+  for (const l of R.lenses) {
+    const el = document.createElement('label'); el.className = 'lens'; el.dataset.id = l.id
+    el.innerHTML = `<span class="lens-radio"></span><span class="lens-text"><span class="lens-name">${l.name}</span><span class="lens-description">${l.description}</span></span>`
+    $(target).appendChild(el)
+  }
+}
+
+const TABS = [
+  { id: 1, fav: 'G', c: '#3f3f46', title: 'Fix login redirect · Pull Request #412', url: 'github.com/acme/app/pull/412' },
+  { id: 2, fav: '▶', c: '#52525b', title: 'CI run failed · build-and-test', url: 'github.com/acme/app/actions/runs/9120' },
+  { id: 3, fav: 'L', c: '#5e6ad2', title: 'APP-231 Login loops on Safari', url: 'linear.app/acme/issue/APP-231' },
+  { id: 4, fav: 'M', c: '#1d1d1f', title: 'Set-Cookie: SameSite - MDN', url: 'developer.mozilla.org/docs/Web/HTTP/Headers/Set-Cookie' },
+  { id: 5, fav: '▶', c: '#ef4444', title: 'Kotlin coroutines in 20 minutes', url: 'youtube.com/watch' },
+  { id: 6, fav: 'K', c: '#7f52ff', title: 'Coroutines guide | Kotlin', url: 'kotlinlang.org/docs/coroutines-guide.html' },
+  { id: 7, fav: 'M', c: '#27272a', title: 'Structured concurrency, explained', url: 'medium.com/@dev/structured-concurrency' },
+  { id: 8, fav: 'I', c: '#f97316', title: 'Wohnungen in Neukölln mieten', url: 'immobilienscout24.de/Suche/de/berlin/neukoelln' },
+  { id: 9, fav: 'M', c: '#16a34a', title: 'Neukölln to Mitte - Google Maps', url: 'google.com/maps/dir' },
+  { id: 10, fav: 'W', c: '#0284c7', title: '2 Zimmer, Kreuzberg, Altbau', url: 'wg-gesucht.de/wohnungen-in-Berlin' },
+  { id: 11, fav: 'G', c: '#2563eb', title: 'berlin half marathon date - Google Search', url: 'google.com/search' },
+  { id: 12, fav: 'S', c: '#fc4c02', title: 'Sunday long run · 24 km | Strava', url: 'strava.com/activities/1182' },
+  { id: 13, fav: 'R', c: '#e11d48', title: 'Marathon taper plan - Runner’s World', url: 'runnersworld.com/training/taper' },
+  { id: 14, fav: 'M', c: '#ea4335', title: 'Inbox (3) - Gmail', url: 'mail.google.com/mail/u/0/#inbox' },
+]
+const GC = { blue: '#8ab4f8', purple: '#c58af9', green: '#81c995', orange: '#fcad70' }
+const LENSES = {
+  session: [['Just now: CI failure', 'blue', [1, 2, 3, 4]], ['Earlier today: coroutines', 'purple', [5, 6, 7]], ['Yesterday: flat search', 'green', [8, 9, 10]], ['Last week: marathon', 'orange', [12, 13]]],
+  project: [['Fix login redirect', 'blue', [1, 2, 3, 4]], ['Learn coroutines', 'purple', [5, 6, 7]], ['Find a flat', 'green', [8, 9, 10]], ['Train for marathon', 'orange', [11, 12, 13]]],
+  topic: [['Auth cookies', 'blue', [1, 3, 4]], ['Kotlin coroutines', 'purple', [5, 6, 7]], ['Berlin flats', 'green', [8, 9, 10]], ['Marathon training', 'orange', [11, 12, 13]]],
+  'next-step': [['Act now', 'blue', [1, 2, 3, 14]], ['Read later', 'purple', [5, 7, 13]], ['Reference', 'green', [4, 6, 9]], ['Probably done', 'orange', [10, 11]]],
+}
+const STRIP_W = 1800 - 120 - 24
+const ctx = document.createElement('canvas').getContext('2d')
+ctx.font = '650 17px ' + getComputedStyle(document.body).fontFamily
+const chipW = (name) => Math.ceil(ctx.measureText(name).width) + 26
+
+function layout(lens, appear) {
+  const tabs = {}, chips = []
+  const groups = lens ? LENSES[lens] : []
+  const inGroup = new Map(); groups.forEach(([n, c, ids]) => ids.forEach((id) => inGroup.set(id, c)))
+  const chipTotal = groups.reduce((s, [n]) => s + chipW(n) + 10, 0)
+  const nEff = TABS.reduce((s, tab) => s + appear(tab.id), 0)
+  const tabW = Math.min(236, (STRIP_W - chipTotal) / Math.max(nEff, 1))
+  let x = 0
+  for (const [name, color, ids] of groups) {
+    chips.push({ key: lens + name, name, color: GC[color], x: x + 2, w: chipW(name) }); x += chipW(name) + 10
+    for (const id of ids) { tabs[id] = { x, w: tabW, color: GC[color] }; x += tabW }
+  }
+  for (const tab of TABS) if (!inGroup.has(tab.id)) { const a = appear(tab.id); tabs[tab.id] = { x, w: tabW * a, color: null, a }; x += tabW * a }
+  return { tabs, chips }
+}
+
+const KEYS = [[0, null], [9.6, 'session'], [11.8, 'project'], [12.8, 'topic'], [13.8, 'next-step'], [15.0, null], [16.55, 'session']]
+const appearAt = (id) => 0.12 + (id - 1) * 0.125
+
+// Build tab + chip DOM once
+const tabEls = {}
+for (const tab of TABS) {
+  const el = document.createElement('div'); el.className = 'tab'
+  el.innerHTML = `<span class="fav" style="background:${tab.c}">${tab.fav}</span><span class="t">${tab.title}</span><span class="sep"></span><span class="ul"></span>`
+  $('#tabs').appendChild(el); tabEls[tab.id] = el
+}
+const chipEls = {}
+for (const [lens, groups] of Object.entries(LENSES)) for (const [name] of groups) {
+  const el = document.createElement('div'); el.className = 'chip'; el.textContent = name; $('#tabs').appendChild(el); chipEls[lens + name] = el
+}
+
+function renderStrip(t) {
+  let i = 0; while (i + 1 < KEYS.length && KEYS[i + 1][0] <= t) i++
+  const to = KEYS[i][1], from = i > 0 ? KEYS[i - 1][1] : null
+  const p = i === 0 ? 1 : inOut(win01(t, KEYS[i][0], KEYS[i][0] + 0.5))
+  const appear = (id) => ease(win01(t, appearAt(id), appearAt(id) + 0.2))
+  const A = layout(from, appear), B = layout(to, appear)
+  const active = t < 2.0 ? TABS.reduce((last, tab) => (t >= appearAt(tab.id) ? tab.id : last), 1) : 14
+  for (const tab of TABS) {
+    const a = A.tabs[tab.id], b = B.tabs[tab.id], el = tabEls[tab.id]
+    const x = lerp(a.x, b.x, p), w = lerp(a.w, b.w, p)
+    el.style.left = x + 'px'; el.style.width = Math.max(0, w) + 'px'
+    el.style.padding = w < 90 ? '0 ' + Math.max(0, (w - 22) / 2) + 'px' : ''
+    el.querySelector('.t').style.display = w < 80 ? 'none' : ''
+    el.style.opacity = appear(tab.id)
+    el.classList.toggle('active', tab.id === active)
+    const ul = el.querySelector('.ul')
+    const c = p < 0.5 ? a.color : b.color
+    ul.style.background = c || 'transparent'; ul.style.opacity = p < 0.5 ? 1 - 2 * p : 2 * p - 1
+    if (!a.color && p < 0.5) ul.style.opacity = 0
+    el.querySelector('.sep').style.opacity = (a.color || b.color) ? 0 : 1
+  }
+  for (const [key, el] of Object.entries(chipEls)) {
+    const ca = A.chips.find((c) => c.key === key), cb = B.chips.find((c) => c.key === key)
+    let o = 0, c = ca || cb
+    if (ca && cb) o = 1; else if (ca) o = 1 - clamp(p / 0.4); else if (cb) o = clamp((p - 0.55) / 0.45)
+    el.style.opacity = o; el.style.display = o > 0 ? '' : 'none'
+    if (c) { el.style.left = c.x + 'px'; el.style.width = c.w + 'px'; el.style.background = c.color; el.style.transform = `scale(${0.9 + 0.1 * o})` }
+  }
+  $('#url').textContent = TABS[active - 1].url
+}
+
+function renderPopup(t) {
+  const open = Math.min(ease(win01(t, 7.05, 7.3)), 1 - win01(t, 11.4, 11.6))
+  const pw = $('#popwrap')
+  pw.style.opacity = open; pw.style.display = open > 0 ? '' : 'none'
+  pw.style.transform = `scale(${1.5 * (0.96 + 0.04 * open)})`
+  const selected = t < 8.02 ? 'project' : 'session'
+  for (const el of document.querySelectorAll('#poplenses .lens')) el.dataset.selected = el.dataset.id === selected
+  const busy = t >= 8.85 && t < 9.65
+  $('#poplenses').disabled = busy
+  const btn = $('#groupbtn')
+  btn.innerHTML = busy ? R.loader + 'Grouping tabs…' : 'Group 14 tabs'
+  const sp = btn.querySelector('.spinner'); if (sp) { sp.style.animation = 'none'; sp.style.rotate = (t * 450) % 360 + 'deg' }
+  btn.style.scale = t >= 8.72 && t < 8.87 ? 0.96 : 1
+  btn.disabled = busy
+  const r = ease(win01(t, 9.9, 10.15))
+  $('#result').style.display = r > 0 ? '' : 'none'; $('#result').style.opacity = r
+}
+
+function center(sel) { const b = $(sel).getBoundingClientRect(); return [b.left + b.width / 2, b.top + b.height / 2] }
+function renderCursor(t) {
+  const way = [[6.5, [1350, 760]], [6.95, center('#ext')], [7.45, center('#ext')], [7.9, center('#poplenses .lens[data-id="session"] .lens-name')], [8.2, center('#poplenses .lens[data-id="session"] .lens-name')], [8.65, center('#groupbtn')], [9.2, center('#groupbtn')], [10.2, [1500, 900]]]
+  let pos = way[0][1]
+  for (let i = 0; i + 1 < way.length; i++) if (t >= way[i][0]) pos = t >= way[i + 1][0] ? way[i + 1][1] : [0, 1].map((k) => lerp(way[i][1][k], way[i + 1][1][k], inOut(win01(t, way[i][0], way[i + 1][0]))))
+  const o = Math.min(ease(win01(t, 6.5, 6.7)), 1 - win01(t, 11.2, 11.4))
+  const cur = $('#cursor'); cur.style.opacity = o; cur.style.transform = `translate(${pos[0] - 6}px, ${pos[1] - 3}px)`
+  const clicks = [[7.0, center('#ext')], [8.0, way[3][1]], [8.75, way[5][1]]]
+  const ck = $('#click'); ck.style.opacity = 0
+  for (const [ct, cp] of clicks) { const q = win01(t, ct, ct + 0.35); if (q > 0 && q < 1) { ck.style.opacity = 0.9 * (1 - q); ck.style.left = cp[0] + 'px'; ck.style.top = cp[1] + 'px'; ck.style.transform = `scale(${0.4 + q})` } }
+}
+
+function block(id, t, a, b, lines = true) {
+  const el = $(id), v = vis(t, a, b)
+  el.style.display = v > 0 ? '' : 'none'
+  el.style.opacity = 1 - win01(t, b - 0.2, b)
+  el.querySelectorAll('.line, .keys, .sub').forEach((ln, i) => {
+    const q = ease(win01(t, a + i * (id === '#c1' ? 0.9 : 0.18), a + i * (id === '#c1' ? 0.9 : 0.18) + 0.35))
+    ln.style.opacity = q; ln.style.transform = `translateY(${(1 - q) * 18}px)`
+  })
+}
+
+function renderCaptions(t) {
+  block('#c1', t, 0.3, 3.0)
+  block('#c2', t, 7.2, 9.85)
+  block('#c3', t, 10.0, 11.6)
+  block('#c4', t, 11.75, 15.05)
+  block('#c5', t, 15.25, 18.05)
+  const sub = $('#c5 .sub'); const q = ease(win01(t, 16.25, 16.6)); sub.style.opacity = q; sub.style.transform = `translateY(${(1 - q) * 18}px)`
+  const keys = document.querySelectorAll('#c5 .key')
+  ;[15.75, 15.9, 16.05].forEach((kt, i) => {
+    const down = t >= kt && t < 16.4
+    keys[i].style.transform = down ? 'translateY(5px)' : ''
+    keys[i].style.boxShadow = down ? '0 0 0 1px rgb(129 140 248 / 0.6), 0 1px 0 #17171b, 0 4px 12px rgb(0 0 0 / 0.4)' : ''
+    keys[i].style.background = down ? '#34325a' : ''
+  })
+  // lens showcase
+  const lv = vis(t, 11.75, 15.05)
+  const lw = $('#lenswrap'); lw.style.opacity = lv; lw.style.display = lv > 0 ? '' : 'none'
+  lw.style.transform = `scale(${1.75 * (0.97 + 0.03 * lv)})`
+  const cur = t < 12.8 ? 'project' : t < 13.8 ? 'topic' : 'next-step'
+  for (const el of document.querySelectorAll('#showlenses .lens')) el.dataset.selected = el.dataset.id === cur
+}
+
+function renderBadge(t) {
+  const badge = $('#badge')
+  const state = t >= 16.95 && t < 18.2 ? 'done' : t >= 16.1 && t < 16.95 ? 'working' : null
+  badge.style.display = state ? '' : 'none'
+  badge.textContent = state === 'done' ? '4' : '…'
+  badge.style.background = state === 'done' ? '#047857' : '#4f46e5'
+  const pulse = (a) => { const q = win01(t, a, a + 0.6); return q > 0 && q < 1 ? (1 - q) : 0 }
+  const ring = $('#ring'); const q = Math.max(pulse(16.1), pulse(16.95))
+  ring.style.opacity = q; ring.style.transform = `scale(${1 + (1 - q) * 0.6})`
+}
+
+function renderOverlay(t) {
+  const reveal = Math.min(inOut(win01(t, 3.0, 3.45)), 1 - inOut(win01(t, 6.2, 6.6)))
+  const outro = inOut(win01(t, 18.05, 18.5))
+  const dim = Math.max(reveal, outro)
+  $('#win').style.filter = dim > 0.001 ? `blur(${dim * 16}px) brightness(${1 - dim * 0.55})` : ''
+  $('#lenswrap').style.filter = $('#win').style.filter
+  const ov = $('#overlay')
+  const inReveal = t < 12
+  ov.style.display = dim > 0.001 ? '' : 'none'
+  const a = inReveal ? 3.2 : 18.25
+  const parts = [$('#ovmark'), ov.querySelector('.name'), $('#ovtag'), $('#ovsmall')]
+  const starts = inReveal ? [a, a + 0.12, a + 0.4, 99] : [a, a + 0.12, a + 0.4, a + 0.9]
+  $('#ovtag').textContent = inReveal ? 'AI tab groups for Chrome, with your own API key.' : 'Your key. Your model. No server.'
+  parts.forEach((el, i) => {
+    const q = ease(win01(t, starts[i], starts[i] + 0.4)) * (inReveal ? 1 - win01(t, 6.15, 6.4) : 1)
+    el.style.opacity = q; el.style.transform = `translateY(${(1 - q) * 22}px) scale(${i === 0 ? 0.85 + 0.15 * q : 1})`
+    el.style.display = starts[i] > 50 ? 'none' : ''
+  })
+}
+
+window.render = (t) => {
+  renderStrip(t); renderPopup(t); renderCaptions(t); renderBadge(t); renderOverlay(t); renderCursor(t)
+}
+render(Number(new URLSearchParams(location.search).get('t') ?? 10.6))
+document.querySelector('#cursor').style.display = 'none'
+</script>
 </body>
 </html>
