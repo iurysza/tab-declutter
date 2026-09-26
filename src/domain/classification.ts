@@ -21,7 +21,7 @@ export interface GroupingPlan {
 
 const colors: readonly GroupColor[] = ['blue', 'purple', 'green', 'orange', 'cyan', 'pink', 'yellow', 'red', 'grey']
 
-export function normaliseClassification(
+export function normalizeClassification(
   candidates: readonly TabCandidate[],
   classification: ModelClassification,
 ): GroupingPlan {

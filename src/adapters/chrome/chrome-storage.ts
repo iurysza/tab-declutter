@@ -1,5 +1,5 @@
 import type { SettingsPort, UndoPort, UndoRecord } from '../../application/ports'
-import { customCriterionSchema, type CustomCriterion } from '../../domain/criteria'
+import { customCriterionSchema, defaultCriterionId, type CustomCriterion } from '../../domain/criteria'
 
 const keys = { provider: 'providerSettings', criteria: 'customCriteria', selected: 'selectedCriterion', undo: 'undoRecord' } as const
 
@@ -15,7 +15,7 @@ export const chromeSettings: SettingsPort = {
   },
   async loadSelectedCriterion() {
     const value = (await chrome.storage.local.get(keys.selected))[keys.selected]
-    return typeof value === 'string' && value ? value : 'workstream'
+    return typeof value === 'string' && value ? value : defaultCriterionId
   },
   async saveSelectedCriterion(id) { await chrome.storage.local.set({ [keys.selected]: id }) },
 }

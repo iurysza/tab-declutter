@@ -1,60 +1,171 @@
-import { useEffect, useMemo, useState } from 'react'
+import { Check, CircleAlert, LoaderCircle, RotateCcw, Settings } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import type { PopupState } from '../application/get-popup-state'
+import type { GroupingOutcome } from '../application/group-current-window'
 import type { RuntimeRequest, RuntimeResponse } from '../application/runtime-messages'
-import { Brand } from '../ui/components/Brand'
+import { defaultCriterionId } from '../domain/criteria'
+import { BrandMark } from '../ui/components/Brand'
+import { plural } from '../ui/plural'
 import { runtimeClient } from '../ui/runtime'
 import '../ui/theme.css'
 import './popup.css'
 
-interface CriterionView { readonly id: string; readonly name: string; readonly description?: string }
-interface PopupState { readonly configured: boolean; readonly criteria: readonly CriterionView[]; readonly selectedCriterion: string; readonly canUndo: boolean }
-interface PopupApi { send(request: RuntimeRequest): Promise<RuntimeResponse>; openOptions(): Promise<void> }
+interface PopupApi {
+  send(request: RuntimeRequest): Promise<RuntimeResponse>
+  openOptions(): Promise<void>
+  getShortcut(): Promise<string | undefined>
+  openShortcutSettings(): Promise<void>
+}
+
+type Notice =
+  | { readonly kind: 'grouped'; readonly text: string }
+  | { readonly kind: 'info'; readonly text: string }
+  | { readonly kind: 'error'; readonly text: string }
+
+type Busy = 'grouping' | 'undoing' | undefined
 
 export function Popup({ api = runtimeClient }: { readonly api?: PopupApi }) {
   const [state, setState] = useState<PopupState>()
-  const [selected, setSelected] = useState('workstream')
-  const [busy, setBusy] = useState(false)
-  const [notice, setNotice] = useState<{ text: string; kind: 'success' | 'error' }>()
+  const [selected, setSelected] = useState<string>(defaultCriterionId)
+  const [busy, setBusy] = useState<Busy>()
+  const [notice, setNotice] = useState<Notice>()
+  const [shortcut, setShortcut] = useState<string>()
 
   const refresh = async () => {
     const response = await api.send({ type: 'get-popup-state' })
-    if (response.ok) {
-      const value = response.data as PopupState
-      setState(value); setSelected(value.selectedCriterion)
-    } else setNotice({ text: response.error.message, kind: 'error' })
+    if (!response.ok) return setNotice({ kind: 'error', text: response.error.message })
+    const value = response.data as PopupState
+    setState(value)
+    setSelected(value.selectedCriterion)
   }
-  useEffect(() => { void refresh() }, [])
-  const criterion = useMemo(() => state?.criteria.find((item) => item.id === selected), [state, selected])
+  useEffect(() => {
+    void refresh()
+    api.getShortcut().then(setShortcut, () => setShortcut(undefined))
+  }, [])
 
-  const choose = async (id: string) => {
+  const choose = (id: string) => {
     setSelected(id)
-    await api.send({ type: 'select-criterion', criterionId: id })
+    void api.send({ type: 'select-criterion', criterionId: id })
   }
+
   const group = async () => {
-    setBusy(true); setNotice(undefined)
+    setBusy('grouping')
+    setNotice(undefined)
     const response = await api.send({ type: 'group-tabs', criterionId: selected })
-    setBusy(false)
-    if (!response.ok) return setNotice({ text: response.error.message, kind: 'error' })
-    const outcome = response.data as { groupCount: number; tabCount: number }
-    setNotice(outcome.groupCount ? { text: `${outcome.groupCount} groups · ${outcome.tabCount} tabs`, kind: 'success' } : { text: 'No useful groups found. Nothing changed', kind: 'success' })
+    setBusy(undefined)
+    if (!response.ok) return setNotice({ kind: 'error', text: response.error.message })
+    const { groupCount, tabCount } = response.data as GroupingOutcome
+    setNotice(groupCount
+      ? { kind: 'grouped', text: `Made ${plural(groupCount, 'group')} from ${plural(tabCount, 'tab')}` }
+      : { kind: 'info', text: 'No clear groups found. Nothing changed.' })
     await refresh()
   }
+
   const undo = async () => {
-    setBusy(true)
+    setBusy('undoing')
     const response = await api.send({ type: 'undo' })
-    setBusy(false)
-    setNotice(response.ok ? { text: 'Previous tab layout restored', kind: 'success' } : { text: response.error.message, kind: 'error' })
+    setBusy(undefined)
+    setNotice(response.ok
+      ? { kind: 'info', text: 'Tabs are back where they were.' }
+      : { kind: 'error', text: response.error.message })
     if (response.ok) await refresh()
   }
 
-  return <main className="popup-shell">
-    <header><Brand compact /><button className="icon-button" onClick={() => void api.openOptions()} aria-label="Open settings">Settings</button></header>
-    <section className="intro"><p className="eyebrow mono">CURRENT WINDOW</p><h1>Turn these tabs into threads.</h1></section>
-    {state && <>
-      <label>Group by<select value={selected} onChange={(event) => void choose(event.target.value)} disabled={busy}>{state.criteria.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
-      <p className="criterion-copy">{criterion?.description}</p>
-      {state.configured ? <button className="primary" onClick={() => void group()} disabled={busy}>{busy ? 'Finding the threads…' : 'Organise current window'}</button> : <button className="primary" onClick={() => void api.openOptions()}>Add a provider first</button>}
-      {notice && <p role="status" className={`status ${notice.kind}`}>{notice.text}</p>}
-      {state.canUndo && <button className="secondary undo" onClick={() => void undo()} disabled={busy}>Undo last grouping</button>}
-    </>}
-  </main>
+  return (
+    <main className="popup">
+      <header className="popup-header">
+        <div className="brand">
+          <BrandMark size={22} />
+          <strong>Tab Declutter</strong>
+        </div>
+        <button className="button button-ghost button-icon" onClick={() => void api.openOptions()} aria-label="Settings" title="Settings">
+          <Settings size={16} strokeWidth={1.75} />
+        </button>
+      </header>
+
+      {state && !state.configured && <Setup onOpen={() => void api.openOptions()} />}
+
+      {state?.configured && (
+        <>
+          <fieldset className="lenses" disabled={busy !== undefined}>
+            <legend>Group tabs by</legend>
+            {state.criteria.map((item) => (
+              <label key={item.id} className="lens" data-selected={item.id === selected}>
+                <input type="radio" name="lens" value={item.id} checked={item.id === selected} onChange={() => choose(item.id)} className="visually-hidden" />
+                <span className="lens-radio" aria-hidden="true" />
+                <span className="lens-text">
+                  <span className="lens-name">{item.name}</span>
+                  <span className="lens-description">{item.description}</span>
+                </span>
+              </label>
+            ))}
+          </fieldset>
+
+          <div className="popup-actions">
+            <GroupButton busy={busy} count={state.eligibleTabCount} onClick={() => void group()} />
+            {notice && <Result notice={notice} canUndo={state.canUndo} busy={busy} onUndo={() => void undo()} />}
+            {!notice && state.canUndo && (
+              <button className="button button-ghost undo-link" onClick={() => void undo()} disabled={busy !== undefined}>
+                <RotateCcw size={14} strokeWidth={1.75} />
+                Undo last grouping
+              </button>
+            )}
+          </div>
+
+          <ShortcutHint shortcut={shortcut} onEdit={() => void api.openShortcutSettings()} />
+        </>
+      )}
+
+      {!state && notice && <p role="status" className="notice notice-error">{notice.text}</p>}
+    </main>
+  )
+}
+
+function ShortcutHint({ shortcut, onEdit }: { readonly shortcut?: string; readonly onEdit: () => void }) {
+  return (
+    <p className="shortcut">
+      {shortcut
+        ? <><kbd>{shortcut}</kbd> groups with this lens.</>
+        : <>No keyboard shortcut set.</>}
+      {' '}
+      <button className="link" onClick={onEdit}>{shortcut ? 'Change' : 'Set one'}</button>
+    </p>
+  )
+}
+
+function Setup({ onOpen }: { readonly onOpen: () => void }) {
+  return (
+    <section className="setup">
+      <h1>Connect a model to start</h1>
+      <p>Tab Declutter uses your own API key to name and group tabs. Add a provider in Settings. It takes a minute.</p>
+      <button className="button button-primary button-large" onClick={onOpen}>Open settings</button>
+    </section>
+  )
+}
+
+function GroupButton({ busy, count, onClick }: { readonly busy: Busy; readonly count?: number; readonly onClick: () => void }) {
+  const tooFew = count !== undefined && count < 2
+  const label = busy === 'grouping' ? 'Grouping tabs…' : count === undefined ? 'Group tabs' : `Group ${plural(count, 'tab')}`
+  return (
+    <>
+      <button className="button button-primary button-large" onClick={onClick} disabled={busy !== undefined || tooFew}>
+        {busy === 'grouping' && <LoaderCircle size={16} className="spinner" aria-hidden="true" />}
+        {label}
+      </button>
+      {tooFew && <p className="popup-hint">Open at least two unpinned tabs to group them.</p>}
+    </>
+  )
+}
+
+function Result({ notice, canUndo, busy, onUndo }: { readonly notice: Notice; readonly canUndo: boolean; readonly busy: Busy; readonly onUndo: () => void }) {
+  const Icon = notice.kind === 'error' ? CircleAlert : Check
+  return (
+    <div role="status" className={`notice ${notice.kind === 'error' ? 'notice-error' : 'notice-success'} result`}>
+      <Icon size={15} strokeWidth={2} aria-hidden="true" />
+      <span>{notice.text}</span>
+      {notice.kind === 'grouped' && canUndo && (
+        <button className="result-undo" onClick={onUndo} disabled={busy !== undefined}>Undo</button>
+      )}
+    </div>
+  )
 }

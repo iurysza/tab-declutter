@@ -1,8 +1,72 @@
-body { width: 360px; }
-.popup-shell { display: grid; gap: 14px; padding: 16px; }
-.popup-shell header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #dde1ec; }
-.intro { padding-top: 2px; }
-.eyebrow { margin: 0 0 5px; color: #697386; }
-h1 { margin: 0; font-size: 24px; line-height: 1.08; letter-spacing: -.035em; max-width: 290px; }
-.criterion-copy { margin: -7px 2px 0; min-height: 17px; color: #697386; font-size: 12px; }
-.undo { justify-self: start; }
+body { width: 340px; }
+
+.popup { display: grid; gap: 14px; padding: 12px 14px 14px; }
+
+.popup-header { display: flex; justify-content: space-between; align-items: center; margin-right: -6px; }
+
+/* Lens picker. Concentric radii: card 12px = row 8px + 4px padding. */
+.lenses { display: grid; gap: 0; margin: 0; padding: 4px; border: 0; border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--shadow-card); }
+.lenses legend { float: left; width: 100%; padding: 6px 8px 6px; color: var(--text-muted); font-size: 12px; font-weight: 500; }
+.lenses:disabled { opacity: 0.7; }
+
+.lens {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition-property: background-color;
+  transition-duration: 120ms;
+  transition-timing-function: var(--ease);
+}
+.lens:hover { background: var(--surface-muted); }
+.lens[data-selected='true'] { background: var(--accent-soft); }
+.lens:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: -2px; }
+.lenses:disabled .lens { cursor: default; }
+
+.lens-radio {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1.5px var(--line-strong);
+  background: var(--surface);
+  transition-property: box-shadow;
+  transition-duration: 120ms;
+  transition-timing-function: var(--ease);
+}
+.lens[data-selected='true'] .lens-radio { box-shadow: inset 0 0 0 5px var(--accent); }
+
+.lens-text { display: grid; gap: 1px; min-width: 0; }
+.lens-name { font-weight: 550; }
+.lens-description { color: var(--text-muted); font-size: 12px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+
+.popup-actions { display: grid; gap: 8px; }
+.popup-hint { color: var(--text-muted); font-size: 12px; text-align: center; }
+
+.result { align-items: center; }
+.result > span { flex: 1; }
+.result-undo {
+  margin: -4px -4px -4px 0;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: inherit;
+  font-weight: 600;
+  transition-property: background-color;
+  transition-duration: 120ms;
+}
+.result-undo:hover { background: rgb(0 0 0 / 0.06); }
+.undo-link { justify-self: center; height: 28px; font-size: 12.5px; }
+
+.shortcut { padding-top: 10px; border-top: 1px solid var(--line); color: var(--text-muted); font-size: 12px; text-align: center; }
+.shortcut kbd { padding: 1px 5px; border-radius: 4px; background: var(--surface); box-shadow: var(--shadow-button); color: var(--text); font: inherit; font-weight: 500; }
+.link { padding: 0; border: 0; background: none; color: var(--accent); font-weight: 500; }
+.link:hover { text-decoration: underline; }
+
+.setup { display: grid; gap: 8px; padding: 16px; border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--shadow-card); }
+.setup h1 { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+.setup p { color: var(--text-muted); margin-bottom: 6px; }

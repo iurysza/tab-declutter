@@ -1,9 +1,10 @@
 import { defineManifest } from '@crxjs/vite-plugin'
+import { groupTabsCommand } from './src/application/commands.ts'
 
 export default defineManifest({
   manifest_version: 3,
   name: 'Tab Declutter',
-  description: 'Group open tabs into named workstreams with your chosen LLM.',
+  description: 'AI tab groups for Chrome, with your own API key. Pick a lens, group in one click, undo in one click.',
   version: '0.1.1',
   minimum_chrome_version: '140',
   permissions: ['tabs', 'tabGroups', 'storage'],
@@ -19,6 +20,12 @@ export default defineManifest({
       '16': 'icons/icon-16.png',
       '32': 'icons/icon-32.png',
       '48': 'icons/icon-48.png',
+    },
+  },
+  commands: {
+    [groupTabsCommand]: {
+      suggested_key: { default: 'Alt+Shift+G' },
+      description: 'Group tabs with your last-used lens',
     },
   },
   options_ui: {
