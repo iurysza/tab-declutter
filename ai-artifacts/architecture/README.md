@@ -4,7 +4,7 @@ description: How Tab Declutter is built. The layer map, the group, undo and shor
 
 # Tab Declutter architecture
 
-Tab Declutter is a Manifest V3 Chrome extension with no backend. A popup and a keyboard shortcut ask the service worker to group tabs. The service worker asks the user's AI provider how to group them, checks the answer, and changes the tab strip. One Undo snapshot makes every change reversible.
+Tab Declutter is a Manifest V3 Chrome extension with no backend. A popup and a keyboard shortcut ask the service worker to group tabs. The service worker asks the user's AI provider how to group them, checks the answer, and changes the tab strip. A stored Undo snapshot lets the user attempt to restore the previous layout.
 
 This guide covers what the code doesn't make obvious:
 
@@ -16,7 +16,7 @@ This guide covers what the code doesn't make obvious:
 - [Lenses and prompts](#lenses-and-prompts)
 - [Where to make common changes](#where-to-make-common-changes)
 
-Related documents: the [privacy policy](../../docs/privacy.md), the [store publishing guide](../../docs/chrome-web-store.md), and [ADR-0001](../../docs/decisions/ADR-0001-use-ai-sdk-in-service-worker.md), which explains why the AI SDK runs inside the service worker.
+For the Options save sequence, origin permissions, and partial failures, read [Provider access and settings](provider-access.md). The [privacy policy](../../docs/privacy.md) lists stored and sent data. [ADR-0001](../../docs/decisions/ADR-0001-use-ai-sdk-in-service-worker.md) explains why the AI SDK runs inside the service worker.
 
 ## Layers and dependency rule
 
@@ -165,6 +165,8 @@ stateDiagram-v2
 
 `chromeWorkspace.restore` uses `buildRestorePlan` from `domain/undo.ts`. It ungroups the affected tabs, moves each surviving tab back to its saved index, and rebuilds each old group with its title, color, and collapsed state. Closed tabs are skipped. The result is best-effort if tabs moved or opened in the meantime.
 
+[inferred] No lock serializes `groupCurrentWindow` and `undoLastGrouping` across popup messages and shortcut commands. Both read and write the same `chrome.storage.session` Undo record. The recovery sequence above describes one operation at a time; overlapping operations can replace each other's snapshots. The tests cover sequential calls, not overlapping ones.
+
 ## Keyboard shortcut
 
 The shortcut groups tabs with the last lens the user picked, without opening the popup.
@@ -211,7 +213,7 @@ Other protections:
 
 - **Prompt injection.** The system prompt marks titles and URLs as untrusted data and tells the model to ignore instructions in them. `normalizeClassification` then ignores any reference the model invents. A hostile page title can at worst produce a bad group name, and never a change to a tab outside the window.
 - **API key storage.** The key is kept in `chrome.storage.local`. `restrictLocalStorage` sets the access level to `TRUSTED_CONTEXTS`, so content scripts couldn't read it even if one were added.
-- **Host permissions.** The manifest declares broad optional hosts. At runtime, Options requests only the exact origin of the configured provider, and removes the previous origin after switching.
+- **Host permissions.** The manifest declares broad optional hosts. At runtime, Options requests only the configured provider's origin. After it saves settings for a different origin, it tries to remove the previous grant. See [Provider access and settings](provider-access.md) for failures that leave a grant behind.
 - **Contract checks.** `scripts/verify-project.ts` runs in `bun run check`. It fails the build if source code calls `console.*`, if a string looks like a real API key, if content scripts appear, or if permissions change.
 
 Chrome has no tab-creation time. The Session lens is therefore an approximation built from `lastAccessed` (Chrome 121 and newer), `openerTabId` (only while the opener is still open), and tab order.
