@@ -27,7 +27,7 @@ Read [ai-artifacts/architecture/README.md](ai-artifacts/architecture/README.md) 
 
 ## Commands
 
-The `packageManager` field in `package.json` is `bun@1.1.34`.
+The `packageManager` field in `package.json` is `bun@1.4.2`.
 
 | Command | Runs |
 | --- | --- |
