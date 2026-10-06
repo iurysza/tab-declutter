@@ -118,7 +118,7 @@ In Settings, choose **OpenAI-compatible**, use the printed base URL, set the mod
 
 ## Development
 
-Requires Bun 1.1.34 or newer.
+Use Bun 1.4.2, matching the `packageManager` pin and CI. Commit the text `bun.lock` when dependencies change.
 
 ```sh
 bun install --frozen-lockfile
