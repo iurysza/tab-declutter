@@ -16,29 +16,29 @@
     "mock:provider": "bun run scripts/mock-provider.ts"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^4.0.34",
-    "@ai-sdk/google": "^4.0.37",
-    "@ai-sdk/openai": "^4.0.34",
-    "@ai-sdk/openai-compatible": "^3.0.25",
-    "ai": "^7.0.56",
-    "lucide-react": "^1.48.0",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "zod": "^4.4.3"
+    "@ai-sdk/anthropic": "^4.0.71",
+    "@ai-sdk/google": "^4.0.87",
+    "@ai-sdk/openai": "^4.0.83",
+    "@ai-sdk/openai-compatible": "^3.0.62",
+    "ai": "^7.0.127",
+    "lucide-react": "^1.51.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.7.1",
     "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.2",
-    "@testing-library/user-event": "^14.6.1",
-    "@types/chrome": "^0.1.32",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.5",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@types/chrome": "^0.3.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
     "jsdom": "^28.1.0",
-    "oxlint": "^1.51.0",
+    "oxlint": "^1.86.0",
     "typescript": "^5.9.3",
-    "vite": "^8.2.1",
+    "vite": "^8.3.2",
     "vitest": "^4.1.10"
   }
 }
