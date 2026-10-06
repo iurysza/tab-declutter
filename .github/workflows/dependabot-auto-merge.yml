@@ -1,0 +1,103 @@
+name: Dependabot auto-merge
+
+# Dependabot pull_request runs receive a read-only token, so this workflow
+# uses pull_request_target and does not check out the pull request.
+# gh pr merge --auto waits only for required status checks. This job waits
+# until .github/workflows/ci.yml succeeds for the pull request head, then
+# squash-merges that commit. Semver-major updates stay open for a human.
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  actions: read
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: dependabot-auto-merge-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  auto-merge:
+    if: github.actor == 'dependabot[bot]' && github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Leave semver-major updates open
+        if: steps.metadata.outputs.update-type == 'version-update:semver-major'
+        env:
+          DEPENDENCY_NAMES: ${{ steps.metadata.outputs.dependency-names }}
+          UPDATE_TYPE: ${{ steps.metadata.outputs.update-type }}
+        run: echo "Update type ${UPDATE_TYPE} for ${DEPENDENCY_NAMES}. Leaving the pull request for a human."
+
+      - name: Squash-merge after CI succeeds
+        if: steps.metadata.outputs.update-type != 'version-update:semver-major'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          UPDATE_TYPE: ${{ steps.metadata.outputs.update-type }}
+        run: |
+          set -euo pipefail
+
+          echo "Update type: ${UPDATE_TYPE}"
+          deadline=$(( $(date +%s) + 20 * 60 ))
+
+          while true; do
+            runs=$(gh run list \
+              --repo "$REPO" \
+              --workflow ci.yml \
+              --commit "$HEAD_SHA" \
+              --event pull_request \
+              --limit 20 \
+              --json status,conclusion,createdAt,headSha)
+
+            if [ "$(jq 'length' <<<"$runs")" -eq 0 ]; then
+              echo "CI has not started for ${HEAD_SHA}."
+            else
+              pending=$(jq '[.[] | select(.status != "completed")] | length' <<<"$runs")
+              if [ "$pending" -gt 0 ]; then
+                echo "CI is still running for ${HEAD_SHA}."
+              else
+                conclusion=$(jq -r 'sort_by(.createdAt) | last.conclusion' <<<"$runs")
+                echo "Latest CI run for ${HEAD_SHA}: ${conclusion}"
+                if [ "$conclusion" = "success" ]; then
+                  break
+                fi
+                echo "CI did not succeed. Leaving the pull request open."
+                exit 0
+              fi
+            fi
+
+            if [ "$(date +%s)" -ge "$deadline" ]; then
+              echo "Timed out waiting for CI on ${HEAD_SHA}."
+              exit 1
+            fi
+            sleep 20
+          done
+
+          pull_request=$(gh pr view "$PR_URL" --repo "$REPO" --json state,headRefOid)
+          pr_state=$(jq -r '.state' <<<"$pull_request")
+          pr_head=$(jq -r '.headRefOid' <<<"$pull_request")
+
+          if [ "$pr_state" != "OPEN" ]; then
+            echo "Pull request is ${pr_state}. Nothing to merge."
+            exit 0
+          fi
+
+          if [ "$pr_head" != "$HEAD_SHA" ]; then
+            echo "Pull request head is ${pr_head}, not ${HEAD_SHA}. A newer commit has its own run."
+            exit 0
+          fi
+
+          gh pr merge "$PR_URL" --repo "$REPO" --squash --match-head-commit "$HEAD_SHA"
